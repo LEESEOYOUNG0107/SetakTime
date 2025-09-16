@@ -3,6 +3,8 @@ body {
 }
 
 ul, li {
+    display: flex; /*항목을 가로*/
+    justify-content: space-around; /*항목 사이 간격*/
     list-style: none; /*순서 목록 삭제*/
     margin: 0; 
     padding: 0;
@@ -13,4 +15,11 @@ ul, li {
     color: #000 /*글자색 블랙으로 변경*/
  }
 
- #navigator {width: 80%; height: 40%;}
+ #navigator {
+    width: 80%; 
+    height: 40%;
+}
+
+#logo {
+    color: #3163B4;
+}
