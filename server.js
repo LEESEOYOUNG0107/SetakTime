@@ -1,3 +1,5 @@
+const signupRouter = require('./routes/signup.js');
+const loginRouter = require('./routes/login.js');
 const express = require('express');
 const app = express();
 const path = require('path');
