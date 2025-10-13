@@ -1,0 +1,25 @@
+body {
+    margin: 0 /*여백 삭제*/
+}
+
+ul, li {
+    display: flex; /*항목을 가로*/
+    justify-content: space-around; /*항목 사이 간격*/
+    list-style: none; /*순서 목록 삭제*/
+    margin: 0; 
+    padding: 0;
+}
+
+ a {
+    text-decoration: none; /*a태그 밑줄 삭제*/
+    color: #000 /*글자색 블랙으로 변경*/
+ }
+
+ #navigator {
+    width: 80%; 
+    height: 40%;
+}
+
+#logo {
+    color: #3163B4;
+}

@@ -1,0 +1,160 @@
+/* 기본 스타일 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #eaf2ff; /* 전체 배경색 */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* 헤더 스타일 */
+header {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 15px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #4A90E2; /* 로고 색상 */
+}
+
+header nav ul {
+    display: flex;
+    gap: 25px;
+}
+
+header nav a {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    transition: color 0.2s;
+}
+
+header nav a:hover {
+    color: #4A90E2;
+}
+
+
+/* 메인 컨텐츠 영역 */
+main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.login-container {
+    text-align: center;
+}
+
+.main-logo {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    color: #4A90E2;
+    margin-bottom: 40px;
+}
+
+/* 로그인 박스 스타일 */
+.login-box {
+    background-color: #ffffff;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+/* 입력 필드 스타일 */
+.login-box input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.login-box input::placeholder {
+    color: #aaa;
+}
+
+.login-box input:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* 버튼 그룹 스타일 */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.button-group button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-ok {
+    background-color: #4A90E2;
+    color: white;
+}
+
+.btn-ok:hover {
+    background-color: #357ABD;
+}
+
+.btn-signup {
+    background-color: #D7E3FF;
+    color: #4A90E2;
+}
+
+.btn-signup:hover {
+    background-color: #C1D3FF;
+}

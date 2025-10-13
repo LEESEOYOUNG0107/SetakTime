@@ -1,8 +1,13 @@
+const signupRouter = require('./routes/signup.js');
+const loginRouter = require('./routes/login.js');
 const express = require('express');
-const app = express(); 
+const app = express();
+const path = require('path');
+const authRouter = require('./routes/auth.js'); 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static('style')); 
 
 //라우터 파일 가져오기
 const signupRouter = require('./routes/auth/signup');
@@ -19,20 +24,14 @@ app.use('/reserve', (req, res, next) => {
     next(); // 다음 미들웨어 또는 라우터로 요청을 전달
 });
 
+//라우터 연결
+app.use('/auth', authRouter);
+
 //라우터 연결하기
 app.use('/register', signupRouter);
 app.use('/login', loginRouter);
 app.use('/reserve', reserveRouter);
 
-const PORT = 3000; // 원하는 포트 번호로 변경 가능
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(__dirname + '/views/signup.html');
-});
-
-app.get('/login', (req, res) => {
-    res.sendFile(__dirname + '/views/login.html');
+app.listen(3000, () => {
+  console.log('서버가 포트 3000에서 실행 중입니다.');
 });
