@@ -1,13 +1,12 @@
-/* 기본 스타일 초기화 */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin: 0; /*바깥 여백 제거*/
+    padding: 0; /*안쪽 여백 제거*/
+    box-sizing: border-box; /*요소 크기 계산*/
 }
 
 body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background-color: #eaf2ff; /* 전체 배경색 */
+    font-family: 'Noto Sans KR', sans-serif; /*한글용 폰트*/
+    background-color: #eaf2ff; 
     color: #333;
     display: flex;
     flex-direction: column;
@@ -23,18 +22,18 @@ ul {
     list-style: none;
 }
 
-/* 헤더 스타일 */
+
 header {
     width: 100%;
     background-color: #ffffff;
-    padding: 15px 0;
+    padding: 15px 0; /*안쪽 여백 제거*/
     border-bottom: 1px solid #e0e0e0;
 }
 
 .header-container {
     width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; /*좌우 중앙 정렬*/
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -44,11 +43,11 @@ header {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 24px;
-    color: #4A90E2; /* 로고 색상 */
+    color: #3163B4; /* 로고 색상 */
 }
 
 header nav ul {
-    display: flex;
+    display: flex; /* ul 안의 li을 가로 배치 */
     gap: 25px;
 }
 
@@ -56,15 +55,13 @@ header nav a {
     font-size: 15px;
     font-weight: 500;
     color: #555;
-    transition: color 0.2s;
+    transition: color 0.2s; /*애니메이션 효과*/
 }
 
 header nav a:hover {
     color: #4A90E2;
 }
 
-
-/* 메인 컨텐츠 영역 */
 main {
     flex-grow: 1;
     display: flex;
@@ -81,11 +78,10 @@ main {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 42px;
-    color: #4A90E2;
+    color: #3163B4;
     margin-bottom: 40px;
 }
 
-/* 로그인 박스 스타일 */
 .login-box {
     background-color: #ffffff;
     padding: 40px 50px;
@@ -103,7 +99,6 @@ main {
     color: #333;
 }
 
-/* 입력 필드 스타일 */
 .login-box input {
     width: 100%;
     padding: 15px;
@@ -114,7 +109,7 @@ main {
 }
 
 .login-box input::placeholder {
-    color: #aaa;
+    color: #ABBFDE;
 }
 
 .login-box input:focus {
@@ -123,7 +118,6 @@ main {
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
-/* 버튼 그룹 스타일 */
 .button-group {
     display: flex;
     gap: 10px;
@@ -137,7 +131,7 @@ main {
     border-radius: 10px;
     font-size: 16px;
     font-weight: 500;
-    cursor: pointer;
+    cursor: pointer; /*마우스 커서(손 모양)*/
     transition: all 0.2s ease-in-out;
 }
 
