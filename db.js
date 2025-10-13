@@ -1,3 +1,7 @@
+require('dotenv').config({ path: __dirname + '/.env' }); 
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+
 require('dotenv').config();
 
 // // 하드코딩된 URL 대신,
@@ -17,16 +21,16 @@ const mysql = require('mysql2');
 
 //Node.js와 연결
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: "1234",
-    database: 'SetakTime'
+    host: "localhost",
+    user: "root",
+    password: "0000",
+    database: "Setaktime"
 });
 
 //db 사용하기
 db.getConnection((err, conn) => {
     if(err) {
-        console.err("DB 연결 실패", err);
+        console.error("DB 연결 실패", err);
     } else {
         console.log("DB 연결 성공");
         conn.release(); //→ 풀에서 가져온 연결을 사용 후 반환
