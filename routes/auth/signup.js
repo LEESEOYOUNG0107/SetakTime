@@ -64,18 +64,33 @@ router.get('/', (req, res) => {
 });
 
 // POST 요청: 회원가입 처리
+// router.post('/', (req, res) => {
+//     const { userid, password, username, roomnumber } = req.body;
+
+//     // SQL 쿼리 실행
+//     const sql = 'INSERT INTO information (userid, password, username, roomnumber) VALUES (?, ?, ?, ?)';
+//     db.query(sql, [userid, password, username, roomnumber], (err, result) => {
+//         if (err) {
+//             console.error('회원가입 중 오류:', err);
+//             return res.status(500).send('DB 오류 발생');
+//         }
+//         console.log('회원가입 성공:', result);
+//         res.send('회원가입 완료!');
+//     });
+// });
+
 router.post('/', (req, res) => {
     const { userid, password, username, roomnumber } = req.body;
 
-    // SQL 쿼리 실행
     const sql = 'INSERT INTO information (userid, password, username, roomnumber) VALUES (?, ?, ?, ?)';
     db.query(sql, [userid, password, username, roomnumber], (err, result) => {
         if (err) {
             console.error('회원가입 중 오류:', err);
             return res.status(500).send('DB 오류 발생');
         }
-        console.log('회원가입 성공:', result);
-        res.send('회원가입 완료!');
+
+        // 여기서 바로 클라이언트로 성공 메시지를 보냄
+        res.send('success'); 
     });
 });
 

@@ -32,15 +32,44 @@
             <h2 class="main-logo">SetakTime</h2>
             <div class="signup-box">
                 <h3>sign up</h3>
-                <form action="/register" method="POST">
+                <form id="signupForm">
                     <input type="text" name="userid" placeholder="Id" required>
                     <input type="password" name="password" placeholder="pw" required>
                     <input type="text" name="username" placeholder="name" required>
                     <input type="text" name="roomnumber" placeholder="room number">
-                    <div class="button-group">
-                        <button type="submit" class="btn-ok">Ok</button>
-                    </div>
+                    <button type="submit" class="btn-ok">Ok</button>
                 </form>
+
+                <script>
+                    const form = document.getElementById('signupForm');
+
+                    form.addEventListener('submit', function (e) {
+                        e.preventDefault(); // 기본 제출 막기
+
+                        const formData = new FormData(form);
+                        const data = Object.fromEntries(formData.entries());
+
+                        fetch('/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        })
+                            .then(res => res.text())
+                            .then(resText => {
+                                if (resText === 'success') {
+                                    alert('회원가입 성공!');
+                                    window.location.href = '/login'; // 로그인 페이지로 이동
+                                } else {
+                                    alert('회원가입 실패: ' + resText);
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert('회원가입 중 오류가 발생했습니다.');
+                            });
+                    });
+                </script>
+
 
             </div>
         </div>
