@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SetakTime - 로그인</title>
-    <link rel="stylesheet" href="/login.css"> 
+    <link rel="stylesheet" href="/login.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"> <!--구글 폰트 서버 연결1-->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!--연결2-->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet"> <!--원하는 폰트로 연결-->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap"
+        rel="stylesheet"> <!--원하는 폰트로 연결-->
 </head>
+
 <body>
     <header>
         <div class="header-container">
@@ -28,17 +32,43 @@
             <h2 class="main-logo">SetakTime</h2>
             <div class="login-box">
                 <h3>Login</h3>
-                <form>
-                    <input type="text" placeholder="Id">
-                    <input type="password" placeholder="pw">
-                    <div class="button-group">
-                        <button type="submit" class="btn-ok">Ok</button>
-                        <button type="button" class="btn-signup">Sign up</button>
-                    </div>
+                <form id="loginForm">
+                    <input type="text" name="userid" placeholder="Id" required>
+                    <input type="password" name="password" placeholder="Pw" required>
+                    <button type="submit">Login</button>
                 </form>
+                <script>
+                    const form = document.getElementById('loginForm');
+
+                    form.addEventListener('submit', function (e) {
+                        e.preventDefault(); // 기본 제출 막기
+
+                        const formData = new FormData(form);
+                        const data = Object.fromEntries(formData.entries());
+
+                        fetch('/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        })
+                            .then(res => res.text())
+                            .then(resText => {
+                                if (resText === 'success') {
+                                    alert('로그인 성공!');
+                                    window.location.href = '/reserve'; // reserve 페이지로 이동
+                                } else {
+                                    alert('로그인 실패: 아이디나 비밀번호를 확인하세요.');
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert('로그인 중 오류가 발생했습니다.');
+                            });
+                    });
+                </script>
             </div>
         </div>
     </main>
 </body>
-</html>
 
+</html>
