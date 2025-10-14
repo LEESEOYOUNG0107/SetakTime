@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SetakTime - 회원가입</title>
-    <link rel="stylesheet" href="../style/signup.css">
+    <link rel="stylesheet" href="/signup.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <header>
         <div class="header-container">
@@ -28,19 +32,19 @@
             <h2 class="main-logo">SetakTime</h2>
             <div class="signup-box">
                 <h3>sign up</h3>
-                <form>
-                    <input type="text" placeholder="Id">
-                    <input type="password" placeholder="pw">
-                    <input type="password" placeholder="pw check">
-                    <input type="text" placeholder="name">
-                    <input type="text" placeholder="room number">
+                <form action="/register" method="POST">
+                    <input type="text" name="userid" placeholder="Id" required>
+                    <input type="password" name="password" placeholder="pw" required>
+                    <input type="text" name="username" placeholder="name" required>
+                    <input type="text" name="roomnumber" placeholder="room number">
                     <div class="button-group">
                         <button type="submit" class="btn-ok">Ok</button>
-                        <button type="button" class="btn-signup">Sign up</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </main>
 </body>
+
 </html>
