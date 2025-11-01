@@ -3,12 +3,14 @@ const path = require('path');
 const dotenv = require('dotenv');
 const fetch = require('node-fetch'); // node-fetch v2는 require를 사용해야 합니다.
 const helmet = require('helmet'); // helmet 모듈 추가
+const session = require('express-session'); // express-session 모듈 추가
 
 // 라우터 가져오기
 const authRouter = require('./routes/auth/auth');
 const signupRouter = require('./routes/auth/signup');
 const loginRouter = require('./routes/auth/login');
 const reserveRouter = require('./routes/auth/reserve'); // 예약 라우터 추가
+const adminRouter = require('./routes/auth/admin_api'); // 관리자 API 라우터 추가
 
 // .env 파일 로드
 dotenv.config();
@@ -19,6 +21,17 @@ const PORT = 3000;
 // 미들웨어 설정
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// 세션 미들웨어 설정
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key', // .env 파일에 SESSION_SECRET을 추가하는 것이 좋습니다.
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        secure: false // 개발 환경에서는 false, 배포 시에는 true로 변경
+    }
+}));
 
 // Helmet을 사용하여 보안 헤더 설정
 app.use(
@@ -43,6 +56,16 @@ app.use('/views', express.static(path.join(__dirname, 'views')));
 app.use('/routes', express.static(path.join(__dirname, 'routes'))); // reserve2.js 같은 파일을 위해 추가
 
 // 라우터 연결
+
+// 접근 제어 미들웨어
+const isTeacher = (req, res, next) => {
+    if (req.session.user && req.session.user.role === 'teacher') {
+        next();
+    } else {
+        res.status(403).send('선생님 계정으로 로그인해야 접근할 수 있습니다.');
+    }
+};
+
 app.use('/auth', authRouter);
 app.use('/register', signupRouter);
 app.use('/login', loginRouter);
@@ -61,6 +84,35 @@ app.get('/reserve', (req, res) => {
 // 마이페이지 라우트
 app.get('/mypage', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'mypage.html'));
+});
+
+// 관리자 페이지 라우트 (선생님만 접근 가능)
+app.get('/admin.html', isTeacher, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+});
+
+// 로그인 페이지 라우트
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+// 로그아웃 API
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('로그아웃 중 오류가 발생했습니다.');
+        }
+        res.redirect('/login.html'); // 로그아웃 성공 시 로그인 페이지로 리다이렉트
+    });
+});
+
+// 현재 사용자 로그인 상태를 반환하는 API
+app.get('/api/user-status', (req, res) => {
+    if (req.session.user) {
+        res.status(200).json(req.session.user);
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
 });
 
 // API 키 읽기

@@ -24,15 +24,14 @@ router.get('/available', (req, res) => {
 });
 
 router.post('/create', (req, res) => {
-    // 임시 미들웨어에서 가져온 사용자 ID
-    const userId = req.user ? req.user.userId : 'temp_user_id';
+    // 세션에서 사용자 ID 가져오기
+    if (!req.session.user) {
+        return res.status(401).send('로그인이 필요합니다.');
+    }
+    const userId = req.session.user.id;
 
     // 클라이언트(Thunder Client)가 보낸 요청의 본문(Body)에서 데이터를 가져옴.
     const {washerId, reservationDate, reservationTime} = req.body; 
-
-    // if (!userId) {
-    //     return res.status(401).send('로그인 상태가 아닙니다.');
-    // }
 
     if (!washerId || !reservationDate || !reservationTime) {
         return res.status(400).send('필수 정보가 누락되었습니다.');
@@ -81,23 +80,12 @@ router.get('/washer/:washerId', (req, res) => {
     });
 });
 
-//나의 예약 현황 조회 API
-router.get('/my-reservations', (req, res) => {
-    const testId = req.user ? req.user.userId : 'temp_user_id'; //임시 사용자 id 사용
-    const query = 'select * from reservations where userid = ? order by reservation_date desc, reservation_time DESC'; //여기부터 시작하기 8/19 조회할 때 날짜순으로 정렬하기
-    
-    db.query(query, [testId], (err, results) => {
-        if(err){
-            console.error('나의 예약 현황 조회 중 오류 발생:', err);
-            return res.status(500).send('예약확인 중 서버 오류');
-        }
-        res.status(200).json(results);
-    });
-});
-
 // 나의 오늘 예약 현황 조회 API
 router.get('/my-reservations/today', (req, res) => {
-    const userId = req.user ? req.user.userId : 'temp_user_id'; // 임시 사용자 ID
+    if (!req.session.user) {
+        return res.status(401).json({ error: '로그인이 필요합니다.' });
+    }
+    const userId = req.session.user.id;
     const today = new Date().toISOString().split('T')[0];
 
     const query = 'SELECT washer_id, reservation_time FROM reservations WHERE userid = ? AND reservation_date = ? ORDER BY reservation_time ASC';
@@ -115,7 +103,10 @@ router.get('/my-reservations/today', (req, res) => {
 router.patch('/update/:id', (req, res) => {
     const reservationId = req.params.id; // URL 파라미터에서 예약 ID를 가져옴
     const { washerId, reservationDate, reservationTime } = req.body;
-    const userId = req.user ? req.user.userId : 'temp_user_id';
+    if (!req.session.user) {
+        return res.status(401).send('로그인이 필요합니다.');
+    }
+    const userId = req.session.user.id;
 
     // 필수 정보 누락 체크
     if (!washerId || !reservationDate || !reservationTime) {
@@ -156,7 +147,10 @@ router.patch('/update/:id', (req, res) => {
 // 예약 취소
 router.delete('/cancel/:id', (req, res) => {
     const reservationId = req.params.id;
-    const userId = req.user ? req.user.userId : 'temp_user_id';
+    if (!req.session.user) {
+        return res.status(401).send('로그인이 필요합니다.');
+    }
+    const userId = req.session.user.id;
 
     //예약 소유권 확인
     const checkOwnQuery = 'SELECT * FROM reservations WHERE id = ? AND userid = ?';

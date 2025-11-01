@@ -50,17 +50,20 @@
                         fetch('http://localhost:3000/login', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(data),
-                            redirect: 'manual' // 리다이렉션을 수동으로 처리
+                            body: JSON.stringify(data)
                         })
-                            .then(res => {
-                                // redirect: 'manual'일 때, 리다이렉션 응답은 type: 'opaqueredirect'로 옵니다.
-                                if (res.type === 'opaqueredirect') {
-                                    // 로그인 성공으로 간주하고 예약 페이지로 이동합니다.
-                                    window.location.href = 'http://localhost:3000/reserve';
+                            .then(async res => {
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    alert(data.message);
+                                    if (data.role === 'teacher') {
+                                        window.location.href = '/admin.html'; // 선생님은 관리자 페이지로 이동
+                                    } else {
+                                        window.location.href = '/reserve'; // 학생은 예약 페이지로
+                                    }
                                 } else {
-                                    // 리다이렉션이 아닌 다른 응답 (예: 로그인 실패)
-                                    alert('로그인 실패: 아이디나 비밀번호를 확인하세요.');
+                                    const errorText = await res.text();
+                                    alert('로그인 실패: ' + errorText);
                                 }
                             })
                             .catch(err => {

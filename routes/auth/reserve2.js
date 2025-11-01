@@ -1,19 +1,42 @@
 //reserve2.js (reserve.html에서 js만 따로 뺀 거)
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const today = new Date();
     const month = today.getMonth() + 1;
     const date = today.getDate();
     document.getElementById("day").innerHTML = `${month}/${date}`;
     
-    //헤더에 사용자 이름 표시
-    const userInfoSpan = document.getElementById('userInfoDisplay');
-    const currentUsername = '테스트사용자';
-    const userRole = '학생'; // 임시 역할
-    if (userInfoSpan) {
-        userInfoSpan.textContent = `${currentUsername} (${userRole})`;
+    // 현재 로그인된 사용자 정보 가져오기
+    let currentUser = null;
+    try {
+        const response = await fetch('http://localhost:3000/api/user-status');
+        if (response.ok) {
+            currentUser = await response.json();
+        } else {
+            // 로그인 안된 상태면 로그인 페이지로 보냄
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login.html';
+            return;
+        }
+    } catch (error) {
+        console.error('사용자 정보를 가져오는 데 실패했습니다.', error);
+        alert('오류가 발생했습니다. 로그인 페이지로 이동합니다.');
+        window.location.href = '/login.html';
+        return;
     }
 
-    const currentUserId = 'temp_user_id';
+    // 헤더에 사용자 이름 표시
+    const userInfoSpan = document.getElementById('userInfoDisplay');
+    if (userInfoSpan) {
+        userInfoSpan.textContent = `${currentUser.name} (${currentUser.role})`;
+    }
+
+    // 로그아웃 버튼 이벤트 리스너
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/logout';
+        });
+    }
 
     const timeSlots = ['18:00', '19:00', '20:10', '21:20'];
     const washerIds = [1, 2, 3];
@@ -111,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // 내 예약일 경우 (현재 유저 ID와 예약자 ID가 같음)
-                if (ownerId === currentUserId) {
+                if (ownerId === currentUser.id) {
                     // if (requestedDateTime < today) {
                     //     alert("이미 지난 시간입니다. 예약을 취소할 수 없습니다.");
                     //     return;

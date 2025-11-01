@@ -2,6 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const reservationsList = document.getElementById('reservationsList');
     const noReservationsMessage = document.getElementById('noReservations');
 
+    // 로그아웃 버튼 이벤트 리스너
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/logout';
+        });
+    }
+
     async function fetchMyTodayReservations() {
         try {
             const response = await fetch('http://localhost:3000/reserve/my-reservations/today');
