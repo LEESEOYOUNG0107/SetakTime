@@ -95,6 +95,22 @@ router.get('/my-reservations', (req, res) => {
     });
 });
 
+// 나의 오늘 예약 현황 조회 API
+router.get('/my-reservations/today', (req, res) => {
+    const userId = req.user ? req.user.userId : 'temp_user_id'; // 임시 사용자 ID
+    const today = new Date().toISOString().split('T')[0];
+
+    const query = 'SELECT washer_id, reservation_time FROM reservations WHERE userid = ? AND reservation_date = ? ORDER BY reservation_time ASC';
+
+    db.query(query, [userId, today], (err, results) => {
+        if (err) {
+            console.error('나의 오늘 예약 현황 조회 중 오류 발생:', err);
+            return res.status(500).send('예약 확인 중 서버 오류가 발생했습니다.');
+        }
+        res.status(200).json(results);
+    });
+});
+
 //예약수정
 router.patch('/update/:id', (req, res) => {
     const reservationId = req.params.id; // URL 파라미터에서 예약 ID를 가져옴

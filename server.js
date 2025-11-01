@@ -58,6 +58,11 @@ app.get('/reserve', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'reserve.html'));
 });
 
+// 마이페이지 라우트
+app.get('/mypage', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'mypage.html'));
+});
+
 // API 키 읽기
 const API_KEY = process.env.CALENDARIFIC_API_KEY;
 
