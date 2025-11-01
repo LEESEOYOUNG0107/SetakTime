@@ -1,0 +1,130 @@
+<!-- calendar.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SetakTime - Calendar</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- FullCalendar Global 빌드 (CSS + JS) -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+    <style>
+        /* 토요일 파랑, 일요일 빨강 */
+        .fc-day-sat {
+            color: #1e90ff !important;
+        }
+
+        .fc-day-sun {
+            color: #ff4d4f !important;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <h1>SetakTime</h1>
+        <nav>
+            <a href="index.html">회원관리</a>
+        </nav>
+    </header>
+
+    <div class="card">
+        <h2 class="title">calendar</h2>
+        <div id="calendar"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 600,
+                locale: 'ko', //한국어 설정
+
+                // 이벤트 스타일
+                eventDisplay: 'block',
+                eventTextColor: '#fff',
+                allDaySlot: true,
+
+                // 날짜 클릭 시 내 일정 추가
+                dateClick: function (info) {
+                    // 해당 날짜에 이벤트가 이미 있으면 추가 금지
+                    const existing = calendar.getEvents().find(e => e.startStr === info.dateStr);
+                    if (existing) {
+                        alert('이 날은 이미 일정이 있습니다 🚫');
+                        return;
+                    }
+
+                    if (confirm(`${info.dateStr} 날짜를 예약 불가로 설정할까요?`)) {
+                        calendar.addEvent({
+                            title: '내 일정 (예약 불가)',
+                            start: info.dateStr,
+                            allDay: true,
+                            backgroundColor: '#8ecaff',
+                            borderColor: '#8ecaff',
+                            textColor: '#000'
+                        });
+                    }
+                },
+
+                // 이벤트 클릭 처리
+                eventClick: function (info) {
+                    const title = info.event.title;
+                    if (title.includes('내 일정')) {
+                        alert('이 날은 예약이 불가능합니다 ❌');
+                    } else {
+                        alert('공휴일입니다 🌕');
+                    }
+                    info.jsEvent.preventDefault();
+                    info.jsEvent.stopPropagation(); // 날짜 클릭으로 이어지는 걸 방지
+                },
+
+                // 공휴일 API 불러오기
+                events: async (fetchInfo, successCallback, failureCallback) => {
+                    try {
+                        const res = await fetch(`/api/holidays?year=2025`);
+                        if (!res.ok) throw new Error('API 응답 오류: ' + res.status);
+                        const data = await res.json();
+
+                        const holidays = (data.response && data.response.holidays)
+                            ? data.response.holidays.map(h => ({
+                                title: h.name,
+                                start: h.date.iso,
+                                allDay: true,
+                                backgroundColor: '#ff6b6b',
+                                borderColor: '#ff6b6b',
+                                textColor: '#fff'
+                            }))
+                            : [];
+
+                        if (holidays.length === 0) {
+                            successCallback([
+                                { title: '샘플 일정 - 시험', start: new Date().toISOString().slice(0, 10), allDay: true, backgroundColor: '#ff6b6b', borderColor: '#ff6b6b' },
+                                { title: '샘플 일정 - 발표', start: new Date(Date.now() + 86400000).toISOString().slice(0, 10), allDay: true, backgroundColor: '#ff6b6b', borderColor: '#ff6b6b' }
+                            ]);
+                            return;
+                        }
+
+                        successCallback(holidays);
+                    } catch (err) {
+                        console.error("일정 불러오기 실패:", err);
+                        failureCallback(err);
+                        successCallback([
+                            { title: '로컬 샘플 - 일정 없음', start: new Date().toISOString().slice(0, 10), allDay: true, backgroundColor: '#ff6b6b' }
+                        ]);
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+</body>
+
+</html>

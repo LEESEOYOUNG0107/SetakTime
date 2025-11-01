@@ -85,14 +85,14 @@ router.post('/', (req, res) => {
     const sql = 'INSERT INTO information (userid, password, username, roomnumber) VALUES (?, ?, ?, ?)';
     db.query(sql, [userid, password, username, roomnumber], (err, result) => {
         if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(409).send('이미 사용 중인 아이디입니다.');
+            }
             console.error('회원가입 중 오류:', err);
-            return res.status(500).send('DB 오류 발생');
+            return res.status(500).send('회원가입 중 알 수 없는 오류가 발생했습니다.');
         }
 
-        // 여기서 바로 클라이언트로 성공 메시지를 보냄
-        res.send('success'); 
     });
 });
 
 module.exports = router;
-

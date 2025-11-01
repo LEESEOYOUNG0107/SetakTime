@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SetakTime - 로그인</title>
-    <link rel="stylesheet" href="/login.css">
+    <link rel="stylesheet" href="../style/login.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"> <!--구글 폰트 서버 연결1-->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!--연결2-->
     <link
@@ -19,6 +19,7 @@
             <h1 class="logo">SetakTime</h1>
             <nav>
                 <ul>
+                    <li><a href="/main.html">홈</a></li>
                     <li><a href="#">세탁 예약/취소</a></li>
                     <li><a href="login.html">로그인</a></li>
                     <li><a href="signup.html">회원가입</a></li>
@@ -46,23 +47,25 @@
                         const formData = new FormData(form);
                         const data = Object.fromEntries(formData.entries());
 
-                        fetch('/login', {
+                        fetch('http://localhost:3000/login', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(data)
+                            body: JSON.stringify(data),
+                            redirect: 'manual' // 리다이렉션을 수동으로 처리
                         })
-                            .then(res => res.text())
-                            .then(resText => {
-                                if (resText === 'success') {
-                                    alert('로그인 성공!');
-                                    window.location.href = '/reserve'; // reserve 페이지로 이동
+                            .then(res => {
+                                // redirect: 'manual'일 때, 리다이렉션 응답은 type: 'opaqueredirect'로 옵니다.
+                                if (res.type === 'opaqueredirect') {
+                                    // 로그인 성공으로 간주하고 예약 페이지로 이동합니다.
+                                    window.location.href = 'http://localhost:3000/reserve';
                                 } else {
+                                    // 리다이렉션이 아닌 다른 응답 (예: 로그인 실패)
                                     alert('로그인 실패: 아이디나 비밀번호를 확인하세요.');
                                 }
                             })
                             .catch(err => {
                                 console.error(err);
-                                alert('로그인 중 오류가 발생했습니다.');
+                                alert('로그인 요청 중 오류가 발생했습니다.');
                             });
                     });
                 </script>

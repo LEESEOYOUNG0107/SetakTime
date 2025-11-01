@@ -71,7 +71,7 @@ router.get('/washer/:washerId', (req, res) => {
 
     // 현재 날짜의 예약만 가져오기 위해 날짜 필터링 추가
     const today = new Date().toISOString().split('T')[0]; 
-    const query = 'SELECT id, userid, reservation_date, reservation_time FROM reservations WHERE washer_id = ? AND reservation_date = ? ORDER BY reservation_time ASC';
+    const query = 'SELECT id, userid, washer_id, reservation_date, reservation_time FROM reservations WHERE washer_id = ? AND reservation_date = ? ORDER BY reservation_time ASC';
     db.query(query, [washerId, today], (err, results) => {
         if (err) {
             console.error('세탁기 예약 조회 오류:', err);
@@ -116,22 +116,23 @@ router.patch('/update/:id', (req, res) => {
         const checkquery = 'SELECT * FROM reservations WHERE washer_id = ? AND reservation_date = ? AND reservation_time = ? AND id != ?';
         db.query(checkquery, [washerId, reservationDate, reservationTime, reservationId], (err, duplicateResult) => {
             if(err){
-                console.log('중복 예약 확인 중 오류 발생', err);
+                console.error('중복 예약 확인 중 오류 발생', err);
                 return res.status(500).send('중복 얘약 오류가 발생했습니다.');
             }
             if (duplicateResult.length > 0) {
                 return res.status(409).send('변경하려는 시간에 이미 다른 예약이 있습니다.');
             }
-        })
+        
 
-        // 예약 정보 수정
-        const updateQuery = 'UPDATE reservations SET washer_id = ?, reservation_date = ?, reservation_time = ? WHERE id = ?';
-        db.query(updateQuery, [washerId, reservationDate, reservationTime, reservationId], (err, result) => {
-            if (err) {
-                console.error('예약 수정 중 오류 발생:', err);
-                return res.status(500).send('예약 소유권 확인 중 서버 오류가 발생했습니다.');
-            }
-            res.status(200).json({ message: '예약이 성공적으로 수정되었습니다.' });
+            // 예약 정보 수정
+            const updateQuery = 'UPDATE reservations SET washer_id = ?, reservation_date = ?, reservation_time = ? WHERE id = ?';
+            db.query(updateQuery, [washerId, reservationDate, reservationTime, reservationId], (err, result) => {
+                if (err) {
+                    console.error('예약 수정 중 오류 발생:', err);
+                    return res.status(500).send('예약 수정 중 서버 오류가 발생했습니다.');
+                }
+                res.status(200).json({ message: '예약이 성공적으로 수정되었습니다.' });
+            });
         });
     });
 });

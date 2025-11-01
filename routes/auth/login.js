@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
 
         if (result.length > 0) {
             // 로그인 성공
-            res.send('success');
+            res.redirect('/reserve');
         } else {
             res.send('fail');
         }
