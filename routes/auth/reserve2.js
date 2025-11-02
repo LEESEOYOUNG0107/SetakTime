@@ -189,6 +189,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
+                // 3. 현재 사용자의 호실이 오늘 이미 예약했는지 확인
+                if (reservedRoomsToday.has(currentUser.roomnumber.toString())) {
+                    alert('이미 오늘 예약을 완료했습니다. 하루에 한 번만 예약할 수 있습니다.');
+                    return;
+                }
+
                 if (confirm(`${timeSlot}에 ${machineId}번 세탁기를 예약하시겠습니까?`)) {
                     try {
                         const response = await fetch('/reserve/create', {
