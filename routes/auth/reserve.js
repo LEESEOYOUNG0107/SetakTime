@@ -83,6 +83,22 @@ router.post('/create', (req, res) => {
         return res.status(403).send('고정 예약이 있는 호실은 추가 예약을 할 수 없습니다.');
     }
 
+    // 0.5. 관리자가 설정한 '예약 불가' 날짜인지 확인
+    const checkDisabledDateQuery = "SELECT id FROM disabled_dates WHERE disabled_date = ?";
+    db.query(checkDisabledDateQuery, [reservationDate], (err, disabledResults) => {
+        if (err) {
+            console.error('예약 불가 날짜 확인 중 오류:', err);
+            return res.status(500).send('서버 오류가 발생했습니다.');
+        }
+        if (disabledResults.length > 0) {
+            return res.status(403).send('관리자에 의해 예약이 불가능한 날짜입니다.');
+        }
+
+        // 이제부터 실제 예약 로직 진행
+        proceedWithReservation();
+    });
+
+    function proceedWithReservation() {
     // 1. 동일한 호실이 오늘 이미 예약했는지 확인
     const checkRoomQuery = `
         SELECT r.id FROM reservations r
@@ -120,6 +136,7 @@ router.post('/create', (req, res) => {
             });
         });
     });
+    }
 });
 
 

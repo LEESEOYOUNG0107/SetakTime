@@ -24,7 +24,8 @@ const db = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "1234",
-    database: "Setaktime"
+    database: "Setaktime",
+    promise: require('mysql2/promise') // Promise 래퍼를 사용하도록 설정
 });
 
 //db 사용하기

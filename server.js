@@ -71,7 +71,7 @@ app.use('/auth', authRouter);
 app.use('/signup', signupRouter);
 app.use('/login', loginRouter);
 app.use('/reserve', reserveRouter); // 예약 라우터 연결
-app.use('/admin', adminRouter); // 관리자 API 라우터 연결
+app.use('/admin/api', adminRouter); // 관리자 API 라우터 경로 수정
 
 // 기본 페이지 라우트
 app.get('/', (req, res) => {
