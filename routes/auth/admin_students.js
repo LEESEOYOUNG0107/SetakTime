@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchStudents() {
         try {
-            const response = await fetch('http://localhost:3000/admin/students');
+            const response = await fetch('http://localhost:3000/admin/api/students');
             const students = await response.json();
 
             studentTableBody.innerHTML = ''; // 기존 목록 초기화
@@ -66,7 +66,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (event.target.tagName === 'BUTTON' && event.target.dataset.id) {
             const studentId = event.target.dataset.id;
             if (confirm(`'${studentId}' 학생을 정말로 삭제하시겠습니까?`)) {
-                // 삭제 로직은 admin.js와 동일
+                try {
+                    const response = await fetch(`http://localhost:3000/admin/api/students/${studentId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        alert('학생이 삭제되었습니다.');
+                        fetchStudents(); // 목록 새로고침
+                    } else {
+                        const errorText = await response.text();
+                        alert(`삭제 실패: ${errorText}`);
+                    }
+                } catch (error) {
+                    console.error('학생 삭제 실패:', error);
+                    alert('학생 삭제 중 오류가 발생했습니다.');
+                }
             }
         }
     });
