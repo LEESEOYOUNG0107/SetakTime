@@ -35,6 +35,23 @@ const fixedReservations = {
     '421': { day: 0, time: '18:00:00', washer_id: 2 }
 };
 
+// 모든 사용자가 '예약 불가' 날짜를 조회할 수 있는 API
+router.get('/disabled-dates', async (req, res) => {
+    try {
+        const query = "SELECT disabled_date FROM disabled_dates";
+        const [results] = await db.query(query);
+        // 시간대 문제 방지를 위해, DB에서 가져온 Date 객체를 KST 기준으로 'YYYY-MM-DD' 문자열로 변환합니다.
+        const dates = results.map(row => {
+            const d = new Date(row.disabled_date);
+            return new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        });
+        res.json(dates);
+    } catch (error) {
+        console.error('예약 불가 날짜 조회 오류:', error);
+        res.status(500).send('서버 오류');
+    }
+});
+
 // 남은 세탁기 조회 API
 router.get('/available', async (req, res) => {
     // 클라이언트에서 조회하려는 날짜와 시간을 쿼리 파라미터로 받습니다.

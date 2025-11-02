@@ -39,16 +39,19 @@ router.post('/', async (req, res) => {
 
     // --- 2. 중복 검사 (아이디, 호실) ---
     try {
-        const checkUserQuery = 'SELECT userid, roomnumber FROM information WHERE userid = ? OR roomnumber = ?';
-        const [results] = await db.query(checkUserQuery, [userid, roomnumber]);
+        // 2-1. 아이디 중복 검사
+        const checkIdQuery = 'SELECT userid FROM information WHERE userid = ?';
+        const [idResults] = await db.query(checkIdQuery, [userid]);
+        if (idResults.length > 0) {
+            return res.status(409).send('이미 사용 중인 아이디입니다.');
+        }
 
-        if (results.length > 0) {
-            if (results.some(r => r.userid === userid)) {
-                return res.status(409).send('이미 사용 중인 아이디입니다.');
-            }
-            if (results.some(r => r.roomnumber.toString() === roomnumber)) {
-                return res.status(409).send('이미 등록된 호실입니다.');
-            }
+        // 2-2. 호실 인원 수 검사 (최대 4명)
+        const checkRoomQuery = 'SELECT COUNT(*) as count FROM information WHERE roomnumber = ?';
+        const [roomResults] = await db.query(checkRoomQuery, [roomnumber]);
+        const roomCount = roomResults[0].count;
+        if (roomCount >= 4) {
+            return res.status(409).send('해당 호실은 정원(4명)이 모두 등록되어 더 이상 등록할 수 없습니다.');
         }
 
         // --- 3. 비밀번호 암호화 및 사용자 등록 ---

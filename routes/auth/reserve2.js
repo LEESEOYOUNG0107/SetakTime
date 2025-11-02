@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const timeSlots = ['18:00:00', '19:00:00', '20:10:00', '21:20:00'];
     const washerIds = [1, 2, 3];
     const slots = document.querySelectorAll('.slots-grid .slot');
+    const slotsGrid = document.querySelector('.slots-grid');
     const mainContainer = document.querySelector('.main-container');
 
     // 오늘 예약된 모든 호실 번호를 저장할 Set
@@ -48,6 +49,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     //예약 현황 업데이트 함수
     async function UpdateReservations() {
+        // --- 예약 불가 날짜 확인 로직 추가 ---
+        try {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const disabledDatesResponse = await fetch('/reserve/disabled-dates');
+            const disabledDates = await disabledDatesResponse.json();
+            if (disabledDates.includes(todayStr)) {
+                slotsGrid.innerHTML = `<div class="disabled-message">오늘은 관리자에 의해 예약이 불가능한 날입니다.</div>`;
+                slotsGrid.style.display = 'block'; // 그리드 대신 메시지를 보여주기 위해
+                mainContainer.classList.remove('loading');
+                return; // 예약 불가 날이므로 아래 로직 실행 중단
+            }
+        } catch (error) {
+            console.error('예약 불가 날짜 확인 중 오류:', error);
+            // 오류가 발생해도 일단 진행하도록 둘 수 있으나, 사용자에게 알리는 것이 좋을 수 있습니다.
+        }
+        // --- 로직 추가 끝 ---
+
         mainContainer.classList.add('loading'); // 로딩 시작
         try {
             // 1. washerIds 배열에 있는 각 세탁기 ID별로 fetch 요청 프로미스(promise) 배열을 만듭니다.
@@ -125,13 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const day = today.getDate().toString().padStart(2, '0');
             const todayStr = `${year}-${month}-${day}`;
             
-            // 클릭된 슬롯의 정보 가져오기
-            const reservationId = slot.dataset.reservationId;
-            const ownerRoom = slot.dataset.ownerRoom;
             const timeIndex = Math.floor(index / washerIds.length);
-            const requestedDateTime = new Date(`${todayStr}T${timeSlots[timeIndex]}`); // 'HH:MM:SS' 형식의 시간으로 Date 객체 생성
-            //지난 시간에 예약, 삭제하려 할 때 활용하는 변수
-
             const machineIndex = index % washerIds.length;
             const machineId = washerIds[machineIndex];
             const timeSlotForConfirm = timeSlots[timeIndex].substring(0, 5); // confirm 창에 표시할 시간 (HH:MM)
@@ -144,8 +156,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return; 
                 }
 
+                // 클릭된 슬롯의 정보 가져오기
+                const reservationId = slot.dataset.reservationId;
+                const ownerRoom = slot.dataset.ownerRoom;
+                const requestedTime = timeSlots[timeIndex];
+
                 // 내 호실의 예약일 경우 (현재 유저의 호실과 예약된 호실이 같음)
                 if (ownerRoom && ownerRoom.toString() === currentUser.roomnumber.toString()) {
+                    const requestedDateTime = new Date(`${todayStr}T${requestedTime}`);
                     if (requestedDateTime < new Date()) {
                         alert("이미 지난 시간입니다. 예약을 취소할 수 없습니다.");
                         return;
@@ -176,17 +194,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 비어있는 칸을 클릭하여 새로 예약하는 경우
             } else {
+                const requestedTime = timeSlots[timeIndex];
+
                 const now = new Date();
-                const reservationStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0, 0); // 오늘 오전 6시
+                const reservationStartTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 6, 0, 0); // 오늘 오전 6시
 
                 // 1. 예약 시간 제한 확인 (오전 6시 이전)
                 if (now < reservationStartTime) {
                     alert('예약은 당일 오전 6시부터 가능합니다.');
                     return;
                 }
-
+                
                 // 2. 이미 지난 시간인지 확인
-                if (requestedDateTime < now) {
+                if (new Date(`${todayStr}T${requestedTime}`) < now) {
                     alert("이미 지난 시간입니다. 이 시간은 예약할 수 없습니다.");
                     return;
                 }
@@ -205,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             body: JSON.stringify({
                                 washerId: machineId,
                                 reservationDate: todayStr,
-                                reservationTime: timeSlots[timeIndex] // 'HH:MM' 대신 'HH:MM:SS' 형식으로 전송
+                                reservationTime: requestedTime // 'HH:MM' 대신 'HH:MM:SS' 형식으로 전송
                             }),
                         });
 
