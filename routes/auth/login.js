@@ -10,13 +10,24 @@ router.post('/', async (req, res) => {
 
     try {
         // 1. 아이디로 사용자 정보(해시된 비밀번호 포함)를 가져옵니다.
-        const sql = 'SELECT userid, password, username, role, roomnumber FROM information WHERE userid = ?';
+        const sql = 'SELECT userid, password, username, role, roomnumber, is_suspended, suspension_end_date FROM information WHERE userid = ?';
         const [results] = await db.query(sql, [userid]);
 
         const user = results[0];
         if (!user) {
             // 사용자가 존재하지 않으면
             return res.status(401).send('아이디 또는 비밀번호가 일치하지 않습니다.');
+        }
+
+        // 1.5. 계정 정지 여부 확인
+        if (user.is_suspended) {
+            const today = new Date();
+            const suspensionEnd = new Date(user.suspension_end_date);
+            // 정지 만료일이 오늘보다 미래인 경우 로그인 차단
+            if (suspensionEnd >= today) {
+                const endDateStr = suspensionEnd.toLocaleDateString('ko-KR');
+                return res.status(403).send(`이 계정은 ${endDateStr}까지 정지되었습니다.`);
+            }
         }
 
         // 2. 입력된 비밀번호와 DB의 해시된 비밀번호를 비교합니다.

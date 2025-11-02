@@ -14,7 +14,12 @@ router.use((req, res, next) => {
 // 모든 학생 목록 조회 API
 router.get('/students', async (req, res) => {
     try {
-        const query = "SELECT userid, username, roomnumber FROM information WHERE role = 'student'";
+        const query = `
+            SELECT userid, username, roomnumber, is_suspended, suspension_end_date
+            FROM information 
+            WHERE role = 'student' 
+            AND userid IS NOT NULL AND userid != ''
+            AND username IS NOT NULL AND username != ''`;
         const [results] = await db.query(query);
         res.json(results);
     } catch (error) {
@@ -36,6 +41,28 @@ router.delete('/students/:id', async (req, res) => {
     }
 });
 
+// 학생 계정 정지 API
+router.post('/students/:id/suspend', async (req, res) => {
+    const studentId = req.params.id;
+    const { days } = req.body;
+
+    if (!days || isNaN(parseInt(days)) || parseInt(days) <= 0) {
+        return res.status(400).send('정지일수는 1 이상의 숫자여야 합니다.');
+    }
+
+    try {
+        const suspensionEndDate = new Date();
+        suspensionEndDate.setDate(suspensionEndDate.getDate() + parseInt(days));
+
+        const query = "UPDATE information SET is_suspended = TRUE, suspension_end_date = ? WHERE userid = ? AND role = 'student'";
+        await db.query(query, [suspensionEndDate, studentId]);
+
+        res.status(200).send(`${studentId} 학생을 ${days}일 동안 정지 처리했습니다.`);
+    } catch (error) {
+        console.error('학생 정지 처리 중 오류:', error);
+        res.status(500).send('학생 정지 처리 중 오류가 발생했습니다.');
+    }
+});
 // --- 예약 불가 날짜 관리 API ---
 
 // 모든 '예약 불가' 날짜 조회
