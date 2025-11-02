@@ -55,9 +55,11 @@ header {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(15px);
   border-radius: 24px;
-  padding: 40px 50px;
+  width: 500px; /* 로그인 카드와 동일한 너비로 고정 */
+  padding: 20px 45px; /* 패딩 축소 */
   text-align: center;
   box-shadow: 0 8px 30px rgba(49, 99, 180, 0.2);
+  margin-top: 70px; /* 로고와의 간격을 확보하기 위한 여백 추가 */
   transition: transform 0.3s ease;
 }
 .signup-card:hover { transform: translateY(-6px); }
@@ -65,13 +67,13 @@ header {
 .signup-card h2 {
   font-family: 'Poppins', sans-serif;
   color: #3163B4;
-  font-size: 28px;
+  font-size: 26px; /* 폰트 크기 축소 */
   margin-bottom: 10px;
 }
 .signup-card p {
   color: #4A90E2;
   font-size: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 25px; /* 여백 축소 */
 }
 
 /* 입력 폼 */
