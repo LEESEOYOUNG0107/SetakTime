@@ -1,41 +1,55 @@
 body {
     background-color: #F0F6FF;
-    font-family: Arial, sans-serif;
+    font-family: 'Noto Sans KR', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0;
+    color: #333;
 }
 
 header {
-    width: 1535px;
+    width: 100%;
+    padding: 20px 40px;
+    box-sizing: border-box;
+    background: transparent;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 70px;
-    background-color: #FFFFFF;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-h2 {
+header .logo-link {
+    text-decoration: none;
+}
+
+header h2 {
+    font-family: 'Poppins', sans-serif;
     color: #3163B4;
     font-size: 28px;
-    font-weight: 900;
-    margin-left: 60px;
+    font-weight: 700;
+    margin: 0;
 }
 
 .header-buttons {
-    font-size: 16px;
-    font-weight: 600;
-    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
 }
 
-.header-buttons button {
-    border: none;
+.header-buttons a, .header-buttons button, .header-buttons span {
+    text-decoration: none;
+    color: #3163B4;
+    font-weight: 500;
     font-size: 16px;
-    background-color: transparent;
+    transition: color 0.25s;
+    background: none;
+    border: none;
     cursor: pointer;
-    font-weight: 600;
+    font-family: inherit;
+}
+
+.header-buttons a:hover, .header-buttons button:hover {
+    color: #4A90E2;
 }
 
 .main-container {

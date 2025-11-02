@@ -30,14 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         userInfoSpan.textContent = `${currentUser.username} (${currentUser.role})`;
     }
 
-    // 로그아웃 버튼 이벤트 리스너
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            window.location.href = '/logout';
-        });
-    }
-
     const timeSlots = ['18:00:00', '19:00:00', '20:10:00', '21:20:00'];
     const washerIds = [1, 2, 3];
     const slots = document.querySelectorAll('.slots-grid .slot');

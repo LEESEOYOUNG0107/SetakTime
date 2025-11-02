@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SetakTime - 마이페이지</title>ns://fonts.googleapis.com">
+    <title>SetakTime - 마이페이지</title>
+    <link rel="stylesheet" href="/style/mypage.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -14,14 +16,12 @@
         </a>
         <nav class="header-buttons">
             <a href="/main.html">홈</a>
-            <a href="/reserve">세탁 예약</a>
-            <button id="logoutButton">로그아웃</button>
+            <span id="userInfoDisplay"></span>
         </nav>
     </header>
 
     <main>
         <div class="mypage-container">
-            <h1>마이페이지</h1>
             <h2>오늘의 내 예약 현황</h2>
             <ul id="reservationsList"></ul>
             <p id="noReservations" style="display: none;">오늘 예약 내역이 없습니다.</p>

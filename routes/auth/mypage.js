@@ -1,13 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const reservationsList = document.getElementById('reservationsList');
     const noReservationsMessage = document.getElementById('noReservations');
+    const userInfoDisplay = document.getElementById('userInfoDisplay');
 
-    // 로그아웃 버튼 이벤트 리스너
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            window.location.href = '/logout';
-        });
+    // 현재 로그인된 사용자 정보 가져오기
+    try {
+        const response = await fetch('/api/user-status');
+        if (response.ok) {
+            const user = await response.json();
+            if (userInfoDisplay) {
+                userInfoDisplay.textContent = `${user.username} (${user.role === 'student' ? '학생' : '선생님'})`;
+            }
+        } else {
+            // 로그인 안된 상태면 로그인 페이지로 보냄
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login.html';
+            return;
+        }
+    } catch (error) {
+        console.error('사용자 정보를 가져오는 데 실패했습니다.', error);
+        alert('오류가 발생했습니다. 로그인 페이지로 이동합니다.');
+        window.location.href = '/login.html';
+        return;
     }
 
     async function fetchMyTodayReservations() {
