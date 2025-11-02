@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
     const { userid, password } = req.body;
 
     // 1. 아이디로 사용자 정보(해시된 비밀번호 포함)를 가져옵니다.
-    const sql = 'SELECT userid, password, username, role FROM information WHERE userid = ?';
+    const sql = 'SELECT userid, password, username, role, roomnumber FROM information WHERE userid = ?';
     db.query(sql, [userid], (err, result) => {
         if (err) {
             console.error(err);
@@ -30,7 +30,8 @@ router.post('/', (req, res) => {
                     req.session.user = {
                         id: user.userid,
                         name: user.username,
-                        role: user.role
+                        role: user.role,
+                        roomnumber: user.roomnumber // 세션에 호실 번호 추가
                     };
                     return res.status(200).json({ message: '로그인 성공', role: user.role });
                 } else { // 비밀번호가 일치하지 않으면

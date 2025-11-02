@@ -19,5 +19,41 @@
         </div>
     </header>
     <div id="background"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const headerButtons = document.querySelector('.header-buttons');
+
+            try {
+                // 서버에 현재 로그인된 사용자 정보 요청
+                const response = await fetch('/api/user-status');
+
+                if (response.ok) {
+                    // 로그인이 되어 있는 경우
+                    const user = await response.json();
+
+                    // 기존 메뉴를 지우고 새로운 메뉴로 교체
+                    headerButtons.innerHTML = `
+                        <a href="/reserve">세탁 예약/취소</a>
+                        <a href="/mypage.html">마이페이지</a>
+                        <button id="logoutButton">로그아웃</button>
+                        <span id="userInfoDisplay">${user.id}(${user.role === 'student' ? '학생' : '선생님'})</span>
+                    `;
+
+                    // 로그아웃 버튼에 이벤트 리스너 추가
+                    document.getElementById('logoutButton').addEventListener('click', () => {
+                        window.location.href = '/logout';
+                    });
+
+                } else {
+                    // 로그인이 되어 있지 않은 경우 (기존 HTML 메뉴 유지)
+                    console.log('사용자가 로그인되어 있지 않습니다.');
+                }
+            } catch (error) {
+                console.error('사용자 상태 확인 중 오류 발생:', error);
+                // 오류 발생 시 기본 메뉴가 표시되도록 별도 처리는 하지 않음
+            }
+        });
+    </script>
 </body>
 </html>

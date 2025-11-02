@@ -5,6 +5,7 @@ const fetch = require('node-fetch'); // node-fetch v2는 require를 사용해야
 const helmet = require('helmet'); // helmet 모듈 추가
 const session = require('express-session'); // express-session 모듈 추가
 
+const db = require('./db'); // db.js 파일 불러오기
 // 라우터 가져오기
 const authRouter = require('./routes/auth/auth');
 const signupRouter = require('./routes/auth/signup');
@@ -109,7 +110,14 @@ app.get('/logout', (req, res) => {
 // 현재 사용자 로그인 상태를 반환하는 API
 app.get('/api/user-status', (req, res) => {
     if (req.session.user) {
-        res.status(200).json(req.session.user);
+        // 세션에 저장된 user 객체에 roomnumber가 없을 수 있으므로 DB에서 최신 정보 조회
+        const query = "SELECT userid, username, role, roomnumber FROM information WHERE userid = ?";
+        db.query(query, [req.session.user.id], (err, results) => {
+            if (err || results.length === 0) {
+                return res.status(401).json({ error: 'User not found' });
+            }
+            res.status(200).json(results[0]);
+        });
     } else {
         res.status(401).json({ error: 'Not authenticated' });
     }

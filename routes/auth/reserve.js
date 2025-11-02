@@ -29,40 +29,54 @@ router.post('/create', (req, res) => {
         return res.status(401).send('로그인이 필요합니다.');
     }
     const userId = req.session.user.id;
+    const roomNumber = req.session.user.roomnumber;
 
     // 클라이언트(Thunder Client)가 보낸 요청의 본문(Body)에서 데이터를 가져옴.
     const {washerId, reservationDate, reservationTime} = req.body; 
 
-    if (!washerId || !reservationDate || !reservationTime) {
+    if (!washerId || !reservationDate || !reservationTime || !roomNumber) {
         return res.status(400).send('필수 정보가 누락되었습니다.');
     }
 
-    //동인한 세탁기, 날짜, 시간에 이미 예약이 있는지 db에서 조회
-    const checkquery = 'select*from reservations where washer_id=? and reservation_date=? and reservation_time=?';
-    const checkValues = [washerId, reservationDate, reservationTime];
-
-    db.query(checkquery, checkValues, (err, results) => {
+    // 1. 동일한 호실이 오늘 이미 예약했는지 확인
+    const checkRoomQuery = `
+        SELECT r.id FROM reservations r
+        JOIN information u ON r.userid = u.userid
+        WHERE u.roomnumber = ? AND r.reservation_date = ?
+    `;
+    db.query(checkRoomQuery, [roomNumber, reservationDate], (err, roomResults) => {
         if (err) {
-            console.error('중복 예약 확인 중 오류 발생');
-            return res.status(500).send('중복 예약 오류');
+            console.error('호실 중복 예약 확인 중 오류 발생:', err);
+            return res.status(500).send('서버 오류가 발생했습니다.');
         }
-        if (results.length > 0)
-            return res.status(409).send('이미 예약된 시간입니다.');
+        if (roomResults.length > 0) {
+            return res.status(409).send('이미 본인 호실에서 오늘 예약을 완료했습니다.');
+        }
 
-        // 예약 생성
-        const insertquery = 'insert into reservations (userid, washer_id, reservation_date, reservation_time) values (?,?,?,?)';
-        const insertValue = [userId, washerId, reservationDate, reservationTime];
-
-        db.query(insertquery, insertValue, (err, result) => {
+        // 2. 동일한 세탁기, 날짜, 시간에 이미 예약이 있는지 db에서 조회
+        const checkSlotQuery = 'SELECT id FROM reservations WHERE washer_id=? AND reservation_date=? AND reservation_time=?';
+        db.query(checkSlotQuery, [washerId, reservationDate, reservationTime], (err, slotResults) => {
             if (err) {
-                // 예약 생성 중 오류가 발생하면 서버 오류(500)를 보냅니다.
-                console.error('예약 생성 중 오류 발생:', err);
-                return res.status(500).send('(예약 생성 중 오류)서버 오류');
+                console.error('슬롯 중복 예약 확인 중 오류 발생:', err);
+                return res.status(500).send('서버 오류가 발생했습니다.');
             }
-            res.status(201).json({ message: '예약이 성공적으로 완료되었습니다.', reservationId: result.insertId });
+            if (slotResults.length > 0) {
+                return res.status(409).send('이미 다른 사람이 예약한 시간입니다.');
+            }
+
+            // 3. 예약 생성
+            const insertQuery = 'INSERT INTO reservations (userid, washer_id, reservation_date, reservation_time) VALUES (?,?,?,?)';
+            db.query(insertQuery, [userId, washerId, reservationDate, reservationTime], (err, result) => {
+                if (err) {
+                    console.error('예약 생성 중 오류 발생:', err);
+                    return res.status(500).send('예약 생성 중 서버 오류가 발생했습니다.');
+                }
+                res.status(201).json({ message: '예약이 성공적으로 완료되었습니다.', reservationId: result.insertId });
+            });
         });
     });
 });
+
 
 
 router.get('/washer/:washerId', (req, res) => {
@@ -70,7 +84,12 @@ router.get('/washer/:washerId', (req, res) => {
 
     // 현재 날짜의 예약만 가져오기 위해 날짜 필터링 추가
     const today = new Date().toISOString().split('T')[0]; 
-    const query = 'SELECT id, userid, washer_id, reservation_date, reservation_time FROM reservations WHERE washer_id = ? AND reservation_date = ? ORDER BY reservation_time ASC';
+    const query = `
+        SELECT r.id, r.userid, u.roomnumber, r.washer_id, r.reservation_date, r.reservation_time 
+        FROM reservations r
+        JOIN information u ON r.userid = u.userid
+        WHERE r.washer_id = ? AND r.reservation_date = ? 
+        ORDER BY r.reservation_time ASC`;
     db.query(query, [washerId, today], (err, results) => {
         if (err) {
             console.error('세탁기 예약 조회 오류:', err);
@@ -88,7 +107,7 @@ router.get('/my-reservations/today', (req, res) => {
     const userId = req.session.user.id;
     const today = new Date().toISOString().split('T')[0];
 
-    const query = 'SELECT washer_id, reservation_time FROM reservations WHERE userid = ? AND reservation_date = ? ORDER BY reservation_time ASC';
+    const query = 'SELECT id, washer_id, reservation_time FROM reservations WHERE userid = ? AND reservation_date = ? ORDER BY reservation_time ASC';
 
     db.query(query, [userId, today], (err, results) => {
         if (err) {
@@ -151,26 +170,40 @@ router.delete('/cancel/:id', (req, res) => {
         return res.status(401).send('로그인이 필요합니다.');
     }
     const userId = req.session.user.id;
+    const roomNumber = req.session.user.roomnumber;
 
-    //예약 소유권 확인
-    const checkOwnQuery = 'SELECT * FROM reservations WHERE id = ? AND userid = ?';
-    db.query(checkOwnQuery, [reservationId, userId], (err, results) => {
-        if(err)
+    // 예약 소유권 확인: 예약을 직접 한 사람이거나, 같은 호실의 사람인지 확인
+    const checkOwnershipQuery = `
+        SELECT r.id, u.roomnumber 
+        FROM reservations r
+        JOIN information u ON r.userid = u.userid
+        WHERE r.id = ?
+    `;
+    db.query(checkOwnershipQuery, [reservationId], (err, results) => {
+        if (err) {
             return res.status(500).send('예약 소유권 확인 중 오류가 발생했습니다.');
-        if(results.length === 0)
-            return res.status(403).send('해당 예약이 존재하지 않습니다.');
+        }
+        if (results.length === 0) {
+            return res.status(404).send('취소하려는 예약이 존재하지 않습니다.');
+        }
+
+        const reservation = results[0];
+        // 권한 확인: 예약을 한 사람의 호실과 현재 요청자의 호실이 다르면 권한 없음
+        if (reservation.roomnumber.toString() !== roomNumber.toString()) {
+            return res.status(403).send('이 예약을 취소할 권한이 없습니다.');
+        }
 
 
-        //예약 삭제
-        const deleteQuery = 'delete from reservations where id=?';
+        // 예약 삭제
+        const deleteQuery = 'DELETE FROM reservations WHERE id = ?';
         db.query(deleteQuery, [reservationId], (err, result) => {
-            if(err){
+            if (err) {
                 console.error('예약 취소 중 오류 발생', err);
                 return res.status(500).send('예약 취소 중 서버 오류');
             }
-            res.status(200).json({message: '예약이 성공적으로 취소되었습니다.'});
-        })
-    })
-})
-//9/24백엔드 끝!!
+            res.status(200).json({ message: '예약이 성공적으로 취소되었습니다.' });
+        });
+    });
+});
+
 module.exports = router;

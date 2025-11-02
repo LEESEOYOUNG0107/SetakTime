@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 현재 로그인된 사용자 정보 가져오기
     let currentUser = null;
     try {
-        const response = await fetch('http://localhost:3000/api/user-status');
+        const response = await fetch('/api/user-status');
         if (response.ok) {
             currentUser = await response.json();
         } else {
@@ -43,13 +43,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const slots = document.querySelectorAll('.slots-grid .slot');
     const mainContainer = document.querySelector('.main-container');
 
+    // 오늘 예약된 모든 호실 번호를 저장할 Set
+    let reservedRoomsToday = new Set();
+
     //예약 현황 업데이트 함수
     async function UpdateReservations() {
         mainContainer.classList.add('loading'); // 로딩 시작
         try {
             // 1. washerIds 배열에 있는 각 세탁기 ID별로 fetch 요청 프로미스(promise) 배열을 만듭니다.
             const promises = washerIds.map(id =>
-                fetch(`http://localhost:3000/reserve/washer/${id}`) // 백엔드에 실제 있는 API 호출
+                fetch(`/reserve/washer/${id}`) // 백엔드에 실제 있는 API 호출
             );
 
             // 2. 모든 API 호출이 (병렬로) 완료될 때까지 기다립니다.
@@ -69,6 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 5. [[1번세탁기], [2번세탁기]] 처럼 나뉜 배열을 하나의 배열로 합칩니다.
             const allReservations = reservationArrays.flat();
 
+            // 오늘 예약된 호실 목록을 새로 만들기 전에 초기화
+            reservedRoomsToday.clear();
+
             // 모든 슬롯 초기화
             slots.forEach(slot => {
                 slot.textContent = '';
@@ -80,17 +86,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             allReservations.forEach(reservation => {
                 const washerId = reservation.washer_id;
                 const reservationTime = reservation.reservation_time.substring(0, 5); // '18:00' 형태로 자름
-                const userId = reservation.userid; // 백엔드에서 user_id를 반환해야 함
+                const roomNumber = reservation.roomnumber; // 백엔드에서 roomnumber를 반환해야 함
                 const reservationId = reservation.id; // 예약 고유 ID
                 const timeIndex = timeSlots.indexOf(reservationTime);
                 const machineIndex = washerIds.indexOf(washerId);
+
+                // 오늘 예약된 호실 목록에 추가
+                if (roomNumber) reservedRoomsToday.add(roomNumber.toString());
 
                 if (timeIndex !== -1 && machineIndex !== -1) {
                     const slotIndex = (timeIndex * washerIds.length) + machineIndex;
                     if (slotIndex < slots.length) {
                         slots[slotIndex].classList.add('occupied');
-                        slots[slotIndex].textContent = userId;
-                        slots[slotIndex].dataset.ownerId = userId;
+                        slots[slotIndex].textContent = roomNumber ? `${roomNumber}호` : '예약';
+                        slots[slotIndex].dataset.ownerRoom = roomNumber;
                         slots[slotIndex].dataset.reservationId = reservationId; // 예약 ID를 dataset에 저장
                     }
                     if(String(reservationId).startsWith('fixed_')){
@@ -111,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     slots.forEach((slot, index) => {
         slot.addEventListener('click', async (event) => {
             const reservationId = slot.dataset.reservationId;
-            const ownerId = slot.dataset.ownerId; // 2단계에서 저장한 예약자 ID
+            const ownerRoom = slot.dataset.ownerRoom; // 슬롯에 저장된 호실 번호
 
             const timeIndex = Math.floor(index / washerIds.length);
             const machineIndex = index % washerIds.length;
@@ -127,22 +136,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 이미 예약된 칸을 클릭한 경우
             if (slot.classList.contains('occupied')) {
-                // 고정 예약인지 먼저 확인
+                // 고정 예약(예: 선생님이 설정)인지 먼저 확인
                 if (slot.classList.contains('fixed')) {
-                    alert(`이 시간은 ${ownerId}호의 고정 예약 시간입니다.`);
+                    alert(`이 시간은 고정 예약 시간입니다.`);
                     return; 
                 }
 
-                // 내 예약일 경우 (현재 유저 ID와 예약자 ID가 같음)
-                if (ownerId === currentUser.id) {
-                    // if (requestedDateTime < today) {
-                    //     alert("이미 지난 시간입니다. 예약을 취소할 수 없습니다.");
-                    //     return;
-                    // }
+                // 내 호실의 예약일 경우 (현재 유저의 호실과 예약된 호실이 같음)
+                if (ownerRoom && ownerRoom.toString() === currentUser.roomnumber.toString()) {
+                    if (requestedDateTime < new Date()) {
+                        alert("이미 지난 시간입니다. 예약을 취소할 수 없습니다.");
+                        return;
+                    }
 
                     if (confirm("예약을 취소하시겠습니까?")) {
                         try {
-                            const response = await fetch(`http://localhost:3000/reserve/cancel/${reservationId}`, {
+                            const response = await fetch(`/reserve/cancel/${reservationId}`, {
                                 method: 'DELETE'
                             });
 
@@ -159,19 +168,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                             alert('예약 취소 중 오류가 발생했습니다.');
                         }
                     }
-                } else { // '다른 사람 예약'일 경우 (고정된 예약)
+                } else { // 다른 호실의 예약일 경우
                     alert('이미 예약되었습니다.');
                 }
 
-                // 예약하기
+            // 비어있는 칸을 클릭하여 새로 예약하는 경우
             } else {
-                // if (requestedDateTime < today) {
-                //     alert("이미 지난 시간입니다. 이 시간은 예약할 수 없습니다.");
-                //     return;
-                // } else 
+                const now = new Date();
+                const reservationStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0, 0); // 오늘 오전 6시
+
+                // 1. 예약 시간 제한 확인 (오전 6시 이전)
+                if (now < reservationStartTime) {
+                    alert('예약은 당일 오전 6시부터 가능합니다.');
+                    return;
+                }
+
+                // 2. 이미 지난 시간인지 확인
+                if (requestedDateTime < now) {
+                    alert("이미 지난 시간입니다. 이 시간은 예약할 수 없습니다.");
+                    return;
+                }
+
                 if (confirm(`${timeSlot}에 ${machineId}번 세탁기를 예약하시겠습니까?`)) {
                     try {
-                        const response = await fetch('http://localhost:3000/reserve/create', {
+                        const response = await fetch('/reserve/create', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
