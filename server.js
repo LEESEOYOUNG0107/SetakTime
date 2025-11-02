@@ -119,19 +119,21 @@ app.get('/logout', (req, res) => {
 });
 
 // 현재 사용자 로그인 상태를 반환하는 API
-app.get('/api/user-status', (req, res) => {
+app.get('/api/user-status', async (req, res) => {
     if (req.session.user) {
-        // 세션에 저장된 user 객체에 roomnumber가 없을 수 있으므로 DB에서 최신 정보 조회
-        const query = "SELECT userid, username, role, roomnumber FROM information WHERE userid = ?";
-        db.query(query, [req.session.user.id], (err, results) => {
-            if (err || results.length === 0) {
-                // 사용자를 찾지 못하면 세션 파기
-                req.session.destroy();
-                return res.status(401).json({ error: 'User not found' });
+        try {
+            // 세션에 저장된 user 객체에 roomnumber가 없을 수 있으므로 DB에서 최신 정보 조회
+            const query = "SELECT userid, username, role, roomnumber FROM information WHERE userid = ?";
+            const [results] = await db.query(query, [req.session.user.id]);
+            if (results.length === 0) {
+                throw new Error('User not found');
             }
             const user = results[0];
             res.status(200).json({ ...user, name: user.username }); // 호환성을 위해 name 속성 추가
-        });
+        } catch (error) {
+            req.session.destroy(); // 오류 발생 시 세션 파기
+            return res.status(401).json({ error: 'User not found or DB error' });
+        }
     } else {
         res.status(401).json({ error: 'Not authenticated' });
     }

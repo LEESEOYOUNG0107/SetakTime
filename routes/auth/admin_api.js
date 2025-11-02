@@ -12,42 +12,47 @@ router.use((req, res, next) => {
 });
 
 // 모든 학생 목록 조회 API
-router.get('/students', (req, res) => {
-    const query = "SELECT userid, username, roomnumber FROM information WHERE role = 'student'";
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('학생 목록 조회 오류:', err);
-            return res.status(500).send('서버 오류가 발생했습니다.');
-        }
+router.get('/students', async (req, res) => {
+    try {
+        const query = "SELECT userid, username, roomnumber FROM information WHERE role = 'student'";
+        const [results] = await db.query(query);
         res.json(results);
-    });
+    } catch (error) {
+        console.error('학생 목록 조회 오류:', error);
+        res.status(500).send('서버 오류가 발생했습니다.');
+    }
 });
 
 // 특정 학생 삭제 API
-router.delete('/students/:id', (req, res) => {
+router.delete('/students/:id', async (req, res) => {
     const studentId = req.params.id;
-    const query = "DELETE FROM information WHERE userid = ? AND role = 'student'";
-    db.query(query, [studentId], (err, result) => {
-        if (err) {
-            return res.status(500).send('학생 삭제 중 오류가 발생했습니다.');
-        }
+    try {
+        const query = "DELETE FROM information WHERE userid = ? AND role = 'student'";
+        await db.query(query, [studentId]);
         res.status(200).send('학생이 성공적으로 삭제되었습니다.');
-    });
+    } catch (error) {
+        console.error('학생 삭제 중 오류:', error);
+        res.status(500).send('학생 삭제 중 오류가 발생했습니다.');
+    }
 });
 
 // --- 예약 불가 날짜 관리 API ---
 
 // 모든 '예약 불가' 날짜 조회
-router.get('/disabled-dates', (req, res) => {
-    const query = "SELECT disabled_date FROM disabled_dates";
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('예약 불가 날짜 조회 오류:', err);
-            return res.status(500).send('서버 오류');
-        }
-        // [ { disabled_date: '2024-01-01' }, ... ] -> [ '2024-01-01', ... ]
-        res.json(results.map(row => row.disabled_date.toISOString().split('T')[0]));
-    });
+router.get('/disabled-dates', async (req, res) => {
+    try {
+        const query = "SELECT disabled_date FROM disabled_dates";
+        const [results] = await db.query(query);
+        // 시간대 문제 방지를 위해, DB에서 가져온 Date 객체를 KST 기준으로 'YYYY-MM-DD' 문자열로 변환합니다.
+        const dates = results.map(row => {
+            const d = new Date(row.disabled_date);
+            return new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        });
+        res.json(dates);
+    } catch (error) {
+        console.error('예약 불가 날짜 조회 오류:', error);
+        res.status(500).send('서버 오류');
+    }
 });
 
 // '예약 불가' 날짜 상태를 토글(추가/삭제)하는 API

@@ -38,12 +38,10 @@ router.post('/', async (req, res) => {
     }
 
     // --- 2. 중복 검사 (아이디, 호실) ---
-    const checkUserQuery = 'SELECT userid, roomnumber FROM information WHERE userid = ? OR roomnumber = ?';
-    db.query(checkUserQuery, [userid, roomnumber], async (err, results) => {
-        if (err) {
-            console.error('중복 확인 중 오류:', err);
-            return res.status(500).send('서버 오류가 발생했습니다.');
-        }
+    try {
+        const checkUserQuery = 'SELECT userid, roomnumber FROM information WHERE userid = ? OR roomnumber = ?';
+        const [results] = await db.query(checkUserQuery, [userid, roomnumber]);
+
         if (results.length > 0) {
             if (results.some(r => r.userid === userid)) {
                 return res.status(409).send('이미 사용 중인 아이디입니다.');
@@ -58,15 +56,12 @@ router.post('/', async (req, res) => {
         // 아이디가 'teacher_id'이면 'teacher' 역할을, 아니면 'student' 역할을 부여
         const role = (userid === 'teacher') ? 'teacher' : 'student';
         const insertUserQuery = 'INSERT INTO information (userid, password, username, roomnumber, role) VALUES (?, ?, ?, ?, ?)';
-        db.query(insertUserQuery, [userid, hashedPassword, username, roomnumber, role], (insertErr, result) => {
-            if (insertErr) {
-                console.error('사용자 등록 중 오류:', insertErr);
-                return res.status(500).send('회원가입 중 오류가 발생했습니다.');
-            }
-            res.status(200).send('success');
-        });
-    });
-    
+        await db.query(insertUserQuery, [userid, hashedPassword, username, roomnumber, role]);
+        res.status(200).send('success');
+    } catch (error) {
+        console.error('회원가입 처리 중 오류:', error);
+        res.status(500).send('서버 오류가 발생했습니다.');
+    }
 });
 
 module.exports = router;

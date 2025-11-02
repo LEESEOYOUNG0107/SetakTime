@@ -20,16 +20,15 @@ require('dotenv').config();
 const mysql = require('mysql2');
 
 //Node.js와 연결
-const db = mysql.createPool({
+const pool = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "1234",
-    database: "Setaktime",
-    promise: require('mysql2/promise') // Promise 래퍼를 사용하도록 설정
+    database: "Setaktime"
 });
 
 //db 사용하기
-db.getConnection((err, conn) => {
+pool.getConnection((err, conn) => {
     if(err) {
         console.error("DB 연결 실패", err);
     } else {
@@ -37,6 +36,8 @@ db.getConnection((err, conn) => {
         conn.release(); //→ 풀에서 가져온 연결을 사용 후 반환
     }
 });
+
+const db = pool.promise();
 
 // 다른 파일에서 require('./db')로 불러와서 사용 가능
 module.exports = db;
