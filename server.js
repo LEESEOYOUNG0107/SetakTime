@@ -39,10 +39,10 @@ app.use(
     helmet.contentSecurityPolicy({
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"], // 인라인 스크립트 허용
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // 인라인 스타일 및 구글 폰트 스타일시트 허용
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"], // 인라인 스크립트 및 FullCalendar CDN 허용
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"], // 인라인 스타일, 구글 폰트, FullCalendar CDN 허용
             fontSrc: ["'self'", "https://fonts.gstatic.com"], // 구글 폰트 소스 허용
-            connectSrc: ["'self'", "http://localhost:3000", "https://calendarific.com"], // API 요청 허용
+            connectSrc: ["'self'", "http://localhost:3000", "https://calendarific.com", "https://v1.hitokoto.cn"], // API 요청 허용
             imgSrc: ["'self'", "data:", "http://localhost:3000"] // 이미지 소스 허용 (data:는 인라인 이미지용)
         },
     })
@@ -68,7 +68,7 @@ const isTeacher = (req, res, next) => {
 };
 
 app.use('/auth', authRouter);
-app.use('/register', signupRouter);
+app.use('/signup', signupRouter);
 app.use('/login', loginRouter);
 app.use('/reserve', reserveRouter); // 예약 라우터 연결
 

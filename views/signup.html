@@ -21,8 +21,7 @@
                 <ul>
                     <li><a href="/main.html">홈</a></li>
                     <li><a href="#">세탁 예약/취소</a></li>
-                    <li><a href="login.html">로그인</a></li>
-                    <li><a href="signup.html">회원가입</a></li>
+                    <li><a href="/login.html">로그인</a></li>
                 </ul>
             </nav>
         </div>
@@ -50,12 +49,49 @@
                         const formData = new FormData(form);
                         const data = Object.fromEntries(formData.entries());
 
-                        fetch('/register', {
+                        // --- 입력값 유효성 검사 ---
+                        const { userid, password, username, roomnumber } = data;
+
+                        // 1. 아이디 검사: 4~15자, 영문 소문자, 숫자만
+                        const useridRegex = /^[a-z0-9]{4,15}$/;
+                        if (!useridRegex.test(userid)) {
+                            alert('아이디는 4~15자의 영문 소문자와 숫자만 사용할 수 있습니다.');
+                            return;
+                        }
+
+                        // 2. 비밀번호 검사: 8~20자, 대/소문자, 숫자, 특수문자(!@#$%^&*) 각 1개 이상 포함
+                        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/;
+                        if (!passwordRegex.test(password)) {
+                            alert('비밀번호는 8~20자 길이로, 영문 대/소문자, 숫자, 특수문자(!@#$%^&*)를 각각 하나 이상 포함해야 합니다.');
+                            return;
+                        }
+
+                        // 3. 이름 검사: 2~5자, 한글만
+                        const usernameRegex = /^[가-힣]{2,5}$/;
+                        if (!usernameRegex.test(username)) {
+                            alert('이름은 2~5자의 한글만 사용할 수 있습니다.');
+                            return;
+                        }
+
+                        // 4. 호실 번호 검사
+                        const roomNum = parseInt(roomnumber, 10);
+                        if (isNaN(roomNum) || roomNum < 401 || roomNum > 418) {
+                            alert('호실 번호는 401부터 418까지만 입력 가능합니다.');
+                            return;
+                        }
+
+                        fetch('/signup', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(data)
                         })
-                            .then(res => res.text())
+                            .then(res => {
+                                if (!res.ok) {
+                                    // 서버에서 보낸 에러 메시지를 그대로 사용하기 위해 text()로 받음
+                                    return res.text().then(text => { throw new Error(text) });
+                                }
+                                return res.text();
+                            })
                             .then(resText => {
                                 if (resText === 'success') {
                                     alert('회원가입 성공!');
@@ -66,7 +102,7 @@
                             })
                             .catch(err => {
                                 console.error(err);
-                                alert('회원가입 중 오류가 발생했습니다.');
+                                alert('회원가입 실패: ' + err.message);
                             });
                     });
                 </script>

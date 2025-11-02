@@ -12,6 +12,7 @@
             <h2>SetakTime</h2>
         </a>
         <div class="header-buttons">
+            <a href="/main.html" id="nav-home">홈</a>
             <a href="/reserve">세탁 예약/취소</a>
             <a href="/mypage.html">마이페이지</a>
             <a href="/login.html">로그인</a>
@@ -34,10 +35,11 @@
 
                     // 기존 메뉴를 지우고 새로운 메뉴로 교체
                     headerButtons.innerHTML = `
+                        <a href="/main.html" id="nav-home">홈</a>
                         <a href="/reserve">세탁 예약/취소</a>
                         <a href="/mypage.html">마이페이지</a>
                         <button id="logoutButton">로그아웃</button>
-                        <span id="userInfoDisplay">${user.id}(${user.role === 'student' ? '학생' : '선생님'})</span>
+                        <span id="userInfoDisplay">${user.username}(${user.role === 'student' ? '학생' : '선생님'})</span>
                     `;
 
                     // 로그아웃 버튼에 이벤트 리스너 추가
@@ -52,6 +54,12 @@
             } catch (error) {
                 console.error('사용자 상태 확인 중 오류 발생:', error);
                 // 오류 발생 시 기본 메뉴가 표시되도록 별도 처리는 하지 않음
+            }
+
+            // 현재 페이지에 해당하는 메뉴 숨기기
+            const homeNav = document.getElementById('nav-home');
+            if (homeNav) {
+                homeNav.style.display = 'none';
             }
         });
     </script>
