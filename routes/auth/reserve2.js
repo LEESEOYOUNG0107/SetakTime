@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 헤더에 사용자 이름 표시
     const userInfoSpan = document.getElementById('userInfoDisplay');
     if (userInfoSpan) {
-        userInfoSpan.textContent = `${currentUser.name} (${currentUser.role})`;
+        userInfoSpan.textContent = `${currentUser.username} (${currentUser.role})`;
     }
 
     // 로그아웃 버튼 이벤트 리스너
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const timeSlots = ['18:00', '19:00', '20:10', '21:20'];
+    const timeSlots = ['18:00:00', '19:00:00', '20:10:00', '21:20:00'];
     const washerIds = [1, 2, 3];
     const slots = document.querySelectorAll('.slots-grid .slot');
     const mainContainer = document.querySelector('.main-container');
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 슬롯 업데이트
             allReservations.forEach(reservation => {
                 const washerId = reservation.washer_id;
-                const reservationTime = reservation.reservation_time.substring(0, 5); // '18:00' 형태로 자름
+                const reservationTime = reservation.reservation_time; // '18:00:00' 전체 시간 사용
                 const roomNumber = reservation.roomnumber; // 백엔드에서 roomnumber를 반환해야 함
                 const reservationId = reservation.id; // 예약 고유 ID
                 const timeIndex = timeSlots.indexOf(reservationTime);
@@ -119,20 +119,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 슬롯 클릭 이벤트 리스너 추가
     slots.forEach((slot, index) => {
         slot.addEventListener('click', async (event) => {
-            const reservationId = slot.dataset.reservationId;
-            const ownerRoom = slot.dataset.ownerRoom; // 슬롯에 저장된 호실 번호
-
-            const timeIndex = Math.floor(index / washerIds.length);
-            const machineIndex = index % washerIds.length;
-            const machineId = washerIds[machineIndex];
-            const timeSlot = timeSlots[timeIndex];
 
             const year = today.getFullYear();
             const month = (today.getMonth() + 1).toString().padStart(2, '0');
             const day = today.getDate().toString().padStart(2, '0');
             const todayStr = `${year}-${month}-${day}`;
-            const requestedDateTime = new Date(`${todayStr}T${timeSlot}:00`);
-            //지난 시간에 예약, 삭제하려 할 때 활용하는 변수. today, timeslot 형식이 다름. timeSlot도 Date 객체로 만들어줌
+            
+            // 클릭된 슬롯의 정보 가져오기
+            const reservationId = slot.dataset.reservationId;
+            const ownerRoom = slot.dataset.ownerRoom;
+            const timeIndex = Math.floor(index / washerIds.length);
+            const requestedDateTime = new Date(`${todayStr}T${timeSlots[timeIndex]}`); // 'HH:MM:SS' 형식의 시간으로 Date 객체 생성
+            //지난 시간에 예약, 삭제하려 할 때 활용하는 변수
+
+            const machineIndex = index % washerIds.length;
+            const machineId = washerIds[machineIndex];
+            const timeSlotForConfirm = timeSlots[timeIndex].substring(0, 5); // confirm 창에 표시할 시간 (HH:MM)
 
             // 이미 예약된 칸을 클릭한 경우
             if (slot.classList.contains('occupied')) {
@@ -195,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
-                if (confirm(`${timeSlot}에 ${machineId}번 세탁기를 예약하시겠습니까?`)) {
+                if (confirm(`${timeSlotForConfirm}에 ${machineId}번 세탁기를 예약하시겠습니까?`)) {
                     try {
                         const response = await fetch('/reserve/create', {
                             method: 'POST',
@@ -203,7 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             body: JSON.stringify({
                                 washerId: machineId,
                                 reservationDate: todayStr,
-                                reservationTime: timeSlot
+                                reservationTime: timeSlots[timeIndex] // 'HH:MM' 대신 'HH:MM:SS' 형식으로 전송
                             }),
                         });
 

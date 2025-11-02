@@ -2,6 +2,39 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // db.js 파일 불러오기
 
+// 호실별 고정 예약 스케줄 정의
+const fixedReservations = {
+    // --- 월요일 (Monday) ---
+    '401': { day: 1, time: '20:10:00', washer_id: 1 },
+    '402': { day: 1, time: '20:10:00', washer_id: 2 },
+    '403': { day: 1, time: '20:10:00', washer_id: 3 },
+    '404': { day: 1, time: '21:20:00', washer_id: 2 },
+    '414': { day: 1, time: '21:20:00', washer_id: 3 },
+  
+    // --- 화요일 (Tuesday) ---
+    '405': { day: 2, time: '20:10:00', washer_id: 1 },
+    '406': { day: 2, time: '20:10:00', washer_id: 2 },
+    '407': { day: 2, time: '20:10:00', washer_id: 3 },
+    '408': { day: 2, time: '21:20:00', washer_id: 1 },
+    '415': { day: 2, time: '21:20:00', washer_id: 3 },
+  
+    // --- 수요일 (Wednesday) ---
+    '409': { day: 3, time: '20:10:00', washer_id: 1 },
+    '419': { day: 3, time: '20:10:00', washer_id: 2 },
+    '411': { day: 3, time: '20:10:00', washer_id: 3 },
+    '412': { day: 3, time: '21:20:00', washer_id: 1 },
+    '416': { day: 3, time: '21:20:00', washer_id: 2 },
+  
+    // --- 목요일 (Thursday) ---
+    '413': { day: 4, time: '20:10:00', washer_id: 1 },
+    '417': { day: 4, time: '20:10:00', washer_id: 2 },
+    '418': { day: 4, time: '20:10:00', washer_id: 3 },
+
+    // --- 일요일 (Sunday) ---
+    '420': { day: 0, time: '18:00:00', washer_id: 1 },
+    '421': { day: 0, time: '18:00:00', washer_id: 2 }
+};
+
 // 남은 세탁기 조회 API
 router.get('/available', (req, res) => {
     // 클라이언트에서 조회하려는 날짜와 시간을 쿼리 파라미터로 받습니다.
@@ -36,6 +69,18 @@ router.post('/create', (req, res) => {
 
     if (!washerId || !reservationDate || !reservationTime || !roomNumber) {
         return res.status(400).send('필수 정보가 누락되었습니다.');
+    }
+
+    // 0. 고정 예약이 있는 호실인지 확인
+    // KST 기준 요일 계산 (UTC 변환 문제 방지)
+    const reservationDay = new Date(reservationDate + 'T00:00:00').getDay(); // 0:일, 1:월, ...
+    const fixedSchedule = fixedReservations[roomNumber.toString()];
+
+    // 오늘 요일에 이 호실의 고정 예약이 있는지 확인
+    if (fixedSchedule && fixedSchedule.day === reservationDay) {
+        // 고정 예약이 있는 호실이 고정된 시간/세탁기가 아닌 다른 예약을 시도하는 경우를 막을 수 있음
+        // 또는, 고정 예약이 있는 날에는 아예 추가 예약을 막는 정책으로 사용
+        return res.status(403).send('고정 예약이 있는 호실은 추가 예약을 할 수 없습니다.');
     }
 
     // 1. 동일한 호실이 오늘 이미 예약했는지 확인
@@ -78,12 +123,15 @@ router.post('/create', (req, res) => {
 });
 
 
-
 router.get('/washer/:washerId', (req, res) => {
     const { washerId } = req.params;
 
-    // 현재 날짜의 예약만 가져오기 위해 날짜 필터링 추가
-    const today = new Date().toISOString().split('T')[0]; 
+    // KST 기준 현재 날짜 및 요일 계산
+    const todayDate = new Date();
+    const offset = todayDate.getTimezoneOffset() * 60000;
+    const today = new Date(todayDate.getTime() - offset).toISOString().split('T')[0];
+    const dayOfWeek = todayDate.getDay(); // 0:일, 1:월, 2:화, ...
+
     const query = `
         SELECT r.id, r.userid, u.roomnumber, r.washer_id, r.reservation_date, r.reservation_time 
         FROM reservations r
@@ -95,6 +143,25 @@ router.get('/washer/:washerId', (req, res) => {
             console.error('세탁기 예약 조회 오류:', err);
             return res.status(500).json({ message: '세탁기 예약 목록을 불러오는 중 오류가 발생했습니다.' });
         }
+
+        // 오늘 요일에 해당하는 모든 고정 예약을 찾아서 추가
+        for (const roomnumber in fixedReservations) {
+            const schedule = fixedReservations[roomnumber];
+            // 1. 오늘 요일과 일치하는가?
+            // 2. 현재 조회중인 세탁기 ID와 일치하는가?
+            if (schedule.day === dayOfWeek && schedule.washer_id.toString() === washerId) {
+                const fixedReservationObject = {
+                    id: `fixed_${roomnumber}_${schedule.day}`, // 예: fixed_401_1
+                    userid: 'system',
+                    roomnumber: roomnumber,
+                    washer_id: schedule.washer_id,
+                    reservation_date: today,
+                    reservation_time: schedule.time
+                };
+                results.push(fixedReservationObject);
+            }
+        }
+
         res.status(200).json(results);
     });
 });
