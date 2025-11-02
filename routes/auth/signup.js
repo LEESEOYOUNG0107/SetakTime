@@ -55,8 +55,10 @@ router.post('/', async (req, res) => {
 
         // --- 3. 비밀번호 암호화 및 사용자 등록 ---
         const hashedPassword = await bcrypt.hash(password, 10);
+        // 아이디가 'teacher_id'이면 'teacher' 역할을, 아니면 'student' 역할을 부여
+        const role = (userid === 'teacher') ? 'teacher' : 'student';
         const insertUserQuery = 'INSERT INTO information (userid, password, username, roomnumber, role) VALUES (?, ?, ?, ?, ?)';
-        db.query(insertUserQuery, [userid, hashedPassword, username, roomnumber, 'student'], (insertErr, result) => {
+        db.query(insertUserQuery, [userid, hashedPassword, username, roomnumber, role], (insertErr, result) => {
             if (insertErr) {
                 console.error('사용자 등록 중 오류:', insertErr);
                 return res.status(500).send('회원가입 중 오류가 발생했습니다.');

@@ -41,7 +41,7 @@ app.use(
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"], // 인라인 스크립트 및 FullCalendar CDN 허용
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"], // 인라인 스타일, 구글 폰트, FullCalendar CDN 허용
-            fontSrc: ["'self'", "https://fonts.gstatic.com"], // 구글 폰트 소스 허용
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"], // 구글 폰트 및 인라인 폰트(data:) 소스 허용
             connectSrc: ["'self'", "http://localhost:3000", "https://calendarific.com", "https://v1.hitokoto.cn"], // API 요청 허용
             imgSrc: ["'self'", "data:", "http://localhost:3000"] // 이미지 소스 허용 (data:는 인라인 이미지용)
         },
@@ -71,6 +71,7 @@ app.use('/auth', authRouter);
 app.use('/signup', signupRouter);
 app.use('/login', loginRouter);
 app.use('/reserve', reserveRouter); // 예약 라우터 연결
+app.use('/admin', adminRouter); // 관리자 API 라우터 연결
 
 // 기본 페이지 라우트
 app.get('/', (req, res) => {
@@ -88,8 +89,18 @@ app.get('/mypage', (req, res) => {
 });
 
 // 관리자 페이지 라우트 (선생님만 접근 가능)
-app.get('/admin.html', isTeacher, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+app.get('/admin_students.html', isTeacher, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'admin_students.html'));
+});
+
+app.get('/admin_calendar.html', isTeacher, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'admin_calendar.html'));
+});
+
+// 선생님 계정으로 로그인 시 기본적으로 학생 관리 페이지로 이동
+// 또는 /admin 주소로 직접 접근 시 학생 관리 페이지로 리다이렉트
+app.get('/admin', isTeacher, (req, res) => {
+    res.redirect('/admin_students.html');
 });
 
 // 로그인 페이지 라우트
@@ -114,9 +125,12 @@ app.get('/api/user-status', (req, res) => {
         const query = "SELECT userid, username, role, roomnumber FROM information WHERE userid = ?";
         db.query(query, [req.session.user.id], (err, results) => {
             if (err || results.length === 0) {
+                // 사용자를 찾지 못하면 세션 파기
+                req.session.destroy();
                 return res.status(401).json({ error: 'User not found' });
             }
-            res.status(200).json(results[0]);
+            const user = results[0];
+            res.status(200).json({ ...user, name: user.username }); // 호환성을 위해 name 속성 추가
         });
     } else {
         res.status(401).json({ error: 'Not authenticated' });
