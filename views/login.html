@@ -1,78 +1,66 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SetakTime - 로그인</title>
-    <link rel="stylesheet" href="/style/login.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> <!--구글 폰트 서버 연결1-->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!--연결2-->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap"
-        rel="stylesheet"> <!--원하는 폰트로 연결-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SetakTime - 로그인</title>
+  <link rel="stylesheet" href="/style/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <header>
-        <div class="header-container">
-            <h1 class="logo">SetakTime</h1>
-            <nav>
-                <ul>
-                    <li><a href="/main.html">홈</a></li>
-                    <li><a href="signup.html">회원가입</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <div class="background-glow"></div>
+  <header>
+    <h1 class="logo">SetakTime</h1>
+  </header>
 
-    <main>
-        <div class="login-container">
-            <h2 class="main-logo">SetakTime</h2>
-            <div class="login-box">
-                <h3>Login</h3>
-                <form id="loginForm">
-                    <input type="text" name="userid" placeholder="Id" required>
-                    <input type="password" name="password" placeholder="Pw" required>
-                    <button type="submit" class="btn-ok">Login</button>
-                </form>
-                <script>
-                    const form = document.getElementById('loginForm');
+  <main>
+    <div class="login-card">
+      <h2>Welcome Back</h2>
+      <p>오늘도 깨끗하게, SetakTime과 함께 🌊</p>
+      <form id="loginForm">
+        <input type="text" name="userid" placeholder="아이디" required>
+        <input type="password" name="password" placeholder="비밀번호" required>
+        <button type="submit" class="btn-login">로그인</button>
+      </form>
+      <div class="links">
+        <a href="/signup.html">회원가입</a> | 
+        <a href="/main.html">메인으로</a>
+      </div>
+    </div>
+  </main>
 
-                    form.addEventListener('submit', function (e) {
-                        e.preventDefault(); // 기본 제출 막기
-
-                        const formData = new FormData(form);
-                        const data = Object.fromEntries(formData.entries());
-
-                        fetch('http://localhost:3000/login', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(data)
-                        })
-                            .then(async res => {
-                                if (res.ok) {
-                                    const data = await res.json();
-                                    alert(data.message);
-                                    if (data.role === 'teacher') {
-                                        window.location.href = '/admin_students.html'; // 선생님은 학생 관리 페이지로 이동
-                                    } else {
-                                        window.location.href = '/main.html'; // 학생은 메인 페이지로
-                                    }
-                                } else {
-                                    const errorText = await res.text();
-                                    alert('로그인 실패: ' + errorText);
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert('로그인 요청 중 오류가 발생했습니다.');
-                            });
-                    });
-                </script>
-            </div>
-        </div>
-    </main>
+  <script>
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      try {
+        const res = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          const result = await res.json();
+          alert(result.message);
+          if (result.role === 'teacher') {
+            window.location.href = '/admin_students.html';
+          } else {
+            window.location.href = '/main.html';
+          }
+        } else {
+          const errText = await res.text();
+          alert('로그인 실패: ' + errText);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('로그인 요청 중 오류가 발생했습니다.');
+      }
+    });
+  </script>
 </body>
-
 </html>

@@ -1,147 +1,148 @@
 /* =============================
-   🌊 SetakTime 로그인 페이지
+   🌌 SetakTime 로그인 (AI 키오스크 스타일)
    ============================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+KR:wght@400;500&display=swap');
+
 body {
-  font-family: 'Noto Sans KR', sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(180deg, #e1f4ff 0%, #ffffff 100%);
-  min-height: 100vh;
+  height: 100vh;
+  font-family: 'Noto Sans KR', sans-serif;
   display: flex;
   flex-direction: column;
-}
-
-/* 헤더 영역 */
-header {
-  width: 100%;
-  background: transparent;
-  padding: 20px 40px;
-  box-sizing: border-box;
-  display: flex;
   justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 30% 30%, #e1f4ff, #ffffff 80%);
+  overflow: hidden;
 }
 
-.header-container {
-  width: 100%;
-  max-width: 1000px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* 부드럽게 빛나는 오로라 느낌 배경 */
+.background-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle at 70% 40%, rgba(49, 99, 180, 0.25), transparent 60%),
+              radial-gradient(circle at 30% 70%, rgba(100, 180, 255, 0.25), transparent 60%);
+  filter: blur(80px);
+  animation: glowMove 10s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes glowMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-50px, 40px); }
+}
+
+/* 헤더 로고 */
+header {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .logo {
   font-family: 'Poppins', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 36px;
   color: #3163B4;
+  text-shadow: 0 0 12px rgba(49, 99, 180, 0.3);
   margin: 0;
 }
 
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 24px;
-  margin: 0;
-  padding: 0;
-}
-
-nav a {
-  text-decoration: none;
-  color: #3163B4;
-  font-weight: 500;
-  transition: color 0.25s;
-}
-
-nav a:hover {
-  color: #4A90E2;
-}
-
-/* 로그인 컨테이너 (화면 중앙) */
-main {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.login-container {
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.main-logo {
-  font-family: 'Poppins', sans-serif;
-  font-size: 42px;
-  font-weight: 700;
-  color: #3163B4;
-  margin-bottom: 10px;
-}
-
-.login-box {
-  background: #ffffff;
+/* 로그인 카드 */
+.login-card {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
   border-radius: 24px;
-  box-shadow: 0 6px 20px rgba(49, 99, 180, 0.15);
-  padding: 40px 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  padding: 40px 50px;
+  box-shadow: 0 8px 30px rgba(49, 99, 180, 0.2);
+  text-align: center;
+  transition: transform 0.3s ease;
 }
 
-.login-box h3 {
+.login-card:hover {
+  transform: translateY(-6px);
+}
+
+.login-card h2 {
+  font-family: 'Poppins', sans-serif;
   color: #3163B4;
-  font-size: 22px;
+  font-size: 28px;
   margin-bottom: 10px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.login-card p {
+  color: #4A90E2;
+  font-size: 15px;
+  margin-bottom: 30px;
 }
 
+/* 입력 */
 input {
+  width: 100%;
   padding: 14px;
+  margin-bottom: 14px;
   border: 1.5px solid #cfe3f9;
   border-radius: 14px;
   font-size: 16px;
   outline: none;
-  transition: border-color 0.25s, box-shadow 0.25s;
+  transition: 0.3s;
 }
 
 input:focus {
   border-color: #4A90E2;
-  box-shadow: 0 0 6px rgba(74, 144, 226, 0.25);
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
 }
 
-.btn-ok {
-  background: #3163B4;
+/* 버튼 */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #3163B4, #5AB3FF);
   color: white;
   font-size: 18px;
   font-weight: 600;
   border: none;
   border-radius: 14px;
-  padding: 14px 0;
   cursor: pointer;
-  transition: background 0.25s, transform 0.2s;
+  box-shadow: 0 6px 15px rgba(49, 99, 180, 0.3);
+  transition: 0.3s;
 }
 
-.btn-ok:hover {
-  background: #4A90E2;
-  transform: translateY(-2px);
+.btn-login:hover {
+  background: linear-gradient(135deg, #4A90E2, #6FC8FF);
+  transform: translateY(-3px);
+}
+
+/* 링크 */
+.links {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.links a {
+  color: #3163B4;
+  text-decoration: none;
+  transition: color 0.25s;
+}
+
+.links a:hover {
+  color: #4A90E2;
 }
 
 /* 반응형 */
 @media (max-width: 480px) {
-  .main-logo {
-    font-size: 34px;
+  .login-card {
+    width: 85%;
+    padding: 30px 25px;
   }
 
-  .login-box {
-    padding: 30px 20px;
+  .logo {
+    font-size: 28px;
   }
 }
