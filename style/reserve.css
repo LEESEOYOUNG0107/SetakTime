@@ -56,23 +56,27 @@ header h2 {
 .main-container {
     width: auto;
     max-width: 1000px;
-    margin: 20px;
-    background-color: #ffffff;
+    margin: 40px 20px; /* 위아래 여백 추가 */
+    background-color: rgba(255, 255, 255, 0.6); /* 반투명 흰색 */
+    backdrop-filter: blur(12px); /* 블러 효과로 유리 느낌 */
+    -webkit-backdrop-filter: blur(12px);
     border-radius: 24px;
-    box-shadow: 0 8px 30px rgba(49, 99, 180, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
     padding: 40px;
     display: flex;
     gap: 40px;
     align-items: flex-start;
     position: relative; /* #day의 기준점이 되도록 설정 */
+    transition: all 0.3s ease;
 }
 
 .date-time-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding-top: 88px; /* .top-row 높이에 맞춰 조정 */
+    gap: 20px; /* slots-grid의 row-gap과 동일하게 설정 */
+    padding-top: 51px; /* .top-row 높이(51px)만큼 정확히 내려주기 */
 }
 
 #day {
@@ -93,14 +97,12 @@ header h2 {
     justify-content: center;
     color: #555;    
     width: 140px;
-    margin-bottom: 20px; /* .slot의 gap과 맞춤 */
 }
 
 .machine-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    position: relative;
 }
 
 .top-row {
@@ -116,7 +118,7 @@ header h2 {
     font-weight: 700;
     color: #3163B4;
     padding-bottom: 15px;
-    border-bottom: 2px solid #eaf3ff;
+    border-bottom: 2px solid rgba(49, 99, 180, 0.1);
 }
 
 .slots-grid {
@@ -128,7 +130,7 @@ header h2 {
 
 .slot {
     background-color: #f8faff;
-    border: 1.5px dashed #d0e2f5;
+    border: 1.5px dashed rgba(49, 99, 180, 0.2);
     width: 150px;
     height: 60px;  
     border-radius: 12px;
@@ -144,14 +146,14 @@ header h2 {
 
 .slot:hover {
     transform: translateY(-3px);
-    border-style: solid;
-    box-shadow: 0 4px 12px rgba(49, 99, 180, 0.1);
+    border: 1.5px solid #3163B4;
+    box-shadow: 0 6px 15px rgba(49, 99, 180, 0.2);
     color: #3163B4;
 }
 
 .slot.occupied {
     background-color: #3163B4;
-    color: #FFFFFF;
+    color: #ffffff;
     border-style: solid;
     border-color: #3163B4;
     cursor: default;

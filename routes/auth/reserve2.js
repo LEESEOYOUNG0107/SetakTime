@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const timeSlots = ['18:00:00', '19:00:00', '20:10:00', '21:20:00'];
     const washerIds = [1, 2, 3];
     const slots = document.querySelectorAll('.slots-grid .slot');
-    const slotsGrid = document.querySelector('.slots-grid');
-    const mainContainer = document.querySelector('.main-container');
 
     // 오늘 예약된 모든 호실 번호를 저장할 Set
     let reservedRoomsToday = new Set();
@@ -46,10 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const todayStr = new Date().toISOString().split('T')[0];
             const disabledDatesResponse = await fetch('/reserve/disabled-dates');
             const disabledDates = await disabledDatesResponse.json();
+            const slotsGrid = document.querySelector('.slots-grid');
             if (disabledDates.includes(todayStr)) {
-                slotsGrid.innerHTML = `<div class="disabled-message">오늘은 관리자에 의해 예약이 불가능한 날입니다.</div>`;
-                slotsGrid.style.display = 'block'; // 그리드 대신 메시지를 보여주기 위해
-                mainContainer.classList.remove('loading');
+                slotsGrid.innerHTML = `<div class="disabled-message" style="grid-column: 1 / -1; text-align: center; color: #ff6b6b; font-size: 16px;">오늘은 관리자에 의해 예약이 불가능한 날입니다.</div>`;
                 return; // 예약 불가 날이므로 아래 로직 실행 중단
             }
         } catch (error) {
@@ -58,7 +55,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         // --- 로직 추가 끝 ---
 
-        mainContainer.classList.add('loading'); // 로딩 시작
         try {
             // 1. washerIds 배열에 있는 각 세탁기 ID별로 fetch 요청 프로미스(promise) 배열을 만듭니다.
             const promises = washerIds.map(id =>
@@ -87,9 +83,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 모든 슬롯 초기화
             slots.forEach(slot => {
-                slot.textContent = '';
-                slot.classList.remove('occupied');
-                slot.classList.remove('fixed');
+                slot.className = 'slot'; // 모든 클래스 초기화
+                slot.textContent = '비어있음';
+                delete slot.dataset.ownerRoom;
+                delete slot.dataset.reservationId;
             });
 
             // 슬롯 업데이트
@@ -107,13 +104,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (timeIndex !== -1 && machineIndex !== -1) {
                     const slotIndex = (timeIndex * washerIds.length) + machineIndex;
                     if (slotIndex < slots.length) {
-                        slots[slotIndex].classList.add('occupied');
-                        slots[slotIndex].textContent = roomNumber ? `${roomNumber}호` : '예약';
-                        slots[slotIndex].dataset.ownerRoom = roomNumber;
-                        slots[slotIndex].dataset.reservationId = reservationId; // 예약 ID를 dataset에 저장
-                    }
-                    if(String(reservationId).startsWith('fixed_')){
-                        slots[slotIndex].classList.add('fixed');
+                        const targetSlot = slots[slotIndex];
+                        targetSlot.classList.add('occupied');
+                        targetSlot.textContent = roomNumber ? `${roomNumber}호` : '예약';
+                        targetSlot.dataset.ownerRoom = roomNumber;
+                        targetSlot.dataset.reservationId = reservationId; // 예약 ID를 dataset에 저장
+                        if(String(reservationId).startsWith('fixed_')){
+                            targetSlot.classList.add('fixed');
+                        }
                     }
                 }
             });
@@ -121,8 +119,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('예약 데이터를 불러오는 중 오류가 발생했습니다:', error);
         } finally {
-            //성공하든 실패하든 로딩을 항상 끝냄
-            mainContainer.classList.remove('loading');
         }
     }
 
