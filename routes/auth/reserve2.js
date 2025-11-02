@@ -4,6 +4,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const month = today.getMonth() + 1;
     const date = today.getDate();
     document.getElementById("day").innerHTML = `${month}/${date}`;
+
+    // 시간 표시에 아이콘 추가
+    const timeElements = document.querySelectorAll('.date-time-col .time');
+    timeElements.forEach(timeEl => {
+        const originalText = timeEl.textContent;
+        timeEl.innerHTML = `⏰ ${originalText}`;
+    });
     
     // 현재 로그인된 사용자 정보 가져오기
     let currentUser = null;
@@ -83,8 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 모든 슬롯 초기화
             slots.forEach(slot => {
-                slot.className = 'slot'; // 모든 클래스 초기화
-                slot.textContent = '비어있음';
+                slot.className = 'slot available'; // 기본 클래스 설정
+                slot.innerHTML = `<span>비어있음</span>`;
                 delete slot.dataset.ownerRoom;
                 delete slot.dataset.reservationId;
             });
@@ -105,12 +112,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const slotIndex = (timeIndex * washerIds.length) + machineIndex;
                     if (slotIndex < slots.length) {
                         const targetSlot = slots[slotIndex];
-                        targetSlot.classList.add('occupied');
-                        targetSlot.textContent = roomNumber ? `${roomNumber}호` : '예약';
+                        const isMyReservation = currentUser && roomNumber && currentUser.roomnumber.toString() === roomNumber.toString();
+
+                        // 기본적으로 '예약됨' 상태로 설정
+                        targetSlot.className = 'slot reserved';
+                        targetSlot.innerHTML = `<span>${roomNumber ? `${roomNumber}호` : '예약됨'}</span>`;
+
+                        // 내 예약일 경우 특별 스타일 적용
+                        if (isMyReservation) {
+                            targetSlot.classList.add('my-reservation');
+                        }
+
                         targetSlot.dataset.ownerRoom = roomNumber;
                         targetSlot.dataset.reservationId = reservationId; // 예약 ID를 dataset에 저장
+
+                        // 고정 예약일 경우 스타일 덮어쓰기
                         if(String(reservationId).startsWith('fixed_')){
-                            targetSlot.classList.add('fixed');
+                            targetSlot.className = 'slot fixed';
                         }
                     }
                 }
@@ -137,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const timeSlotForConfirm = timeSlots[timeIndex].substring(0, 5); // confirm 창에 표시할 시간 (HH:MM)
 
             // 이미 예약된 칸을 클릭한 경우
-            if (slot.classList.contains('occupied')) {
+            if (slot.classList.contains('reserved') || slot.classList.contains('fixed') || slot.classList.contains('using')) {
                 // 고정 예약(예: 선생님이 설정)인지 먼저 확인
                 if (slot.classList.contains('fixed')) {
                     alert(`이 시간은 고정 예약 시간입니다.`);
@@ -150,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const requestedTime = timeSlots[timeIndex];
 
                 // 내 호실의 예약일 경우 (현재 유저의 호실과 예약된 호실이 같음)
-                if (ownerRoom && ownerRoom.toString() === currentUser.roomnumber.toString()) {
+                if (slot.classList.contains('my-reservation')) {
                     const requestedDateTime = new Date(`${todayStr}T${requestedTime}`);
                     if (requestedDateTime < new Date()) {
                         alert("이미 지난 시간입니다. 예약을 취소할 수 없습니다.");

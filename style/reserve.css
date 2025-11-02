@@ -89,13 +89,17 @@ header h2 {
 }
 
 .time {
-    height: 60px; /* .slot 높이와 맞춤 */
+    background-color: #f0f6ff;
+    border: 1px solid rgba(207, 227, 249, 0.8);
+    border-radius: 10px;
+    height: 60px;
     font-weight: 500;
     font-size: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #555;    
+    gap: 8px; /* 아이콘과 텍스트 간격 */
+    color: #5a789e;
     width: 140px;
 }
 
@@ -134,12 +138,14 @@ header h2 {
     width: 150px;
     height: 60px;  
     border-radius: 12px;
-    display: flex;
+    display: flex; /* 아이콘과 텍스트 정렬 */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     font-size: 16px;
-    font-weight: bold;
-    color: #a8c5e9;
+    font-weight: 500;
+    color: #8ca9ce;
     cursor: pointer;
     transition: all 0.25s ease;
 }
@@ -151,13 +157,30 @@ header h2 {
     color: #3163B4;
 }
 
-.slot.occupied {
+.slot.reserved {
     background-color: #3163B4;
     color: #ffffff;
     border-style: solid;
     border-color: #3163B4;
     cursor: default;
-    font-weight: 500;
+}
+
+.slot.my-reservation {
+    background-color: #5a9cff;
+    border-color: #5a9cff;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(90, 156, 255, 0.4);
+}
+
+.slot.using {
+    background-color: #e9eff8;
+    border-color: #d0e2f5;
+    border-style: solid;
+    color: #9ab3d3;
+    cursor: not-allowed;
+}
+.slot.using:hover {
+    transform: none;
 }
 
 .slot.fixed {
