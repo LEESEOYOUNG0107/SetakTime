@@ -1,188 +1,170 @@
-/* ==============================
-   🌊 SetakTime 마이페이지 (키오스크 느낌)
-   ============================== */
-/* =============================
-   🌊 SetakTime 마이페이지 디자인
-   ============================= */
+/* ===================================
+   🌊 SetakTime 마이페이지 — AI 키오스크 스타일
+   =================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root {
+  --main-blue: #7da4e7;
+  --light-blue: #e8f2ff;
+  --text-blue: #3163b4;
+  --bg-glass: rgba(255, 255, 255, 0.55);
+  --shadow-glow: 0 8px 30px rgba(49, 99, 180, 0.15);
+}
+
+/* ------------------ 기본 배경 ------------------ */
 body {
-  font-family: 'Noto Sans KR', sans-serif;
   margin: 0;
-  padding: 0;
-  background: linear-gradient(180deg, #e1f4ff 0%, #ffffff 100%);
-  min-height: 100vh;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: linear-gradient(180deg, #c8e6ff 0%, #ffffff 100%);
+  color: var(--text-blue);
+  display: flex;
   flex-direction: column;
   align-items: center;
-  display: flex;
-  color: #333;
+  min-height: 100vh;
 }
 
-/* 메인 카드 컨테이너 */
-/* --- 1. 헤더 --- */
+/* ------------------ HEADER ------------------ */
 header {
-    width: 100%;
-    padding: 20px 40px;
-    box-sizing: border-box;
-    background: transparent;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  width: 90%;
+  max-width: 1000px;
+  margin-top: 30px;
+  padding: 16px 36px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  box-shadow: var(--shadow-glow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-header .logo-link {
-    text-decoration: none;
+.logo-link {
+  text-decoration: none;
 }
 
-header h2 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: #3163B4;
-    margin: 0;
+.logo-link h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-blue);
+  margin: 0;
+  letter-spacing: -0.5px;
+  transition: 0.3s;
+}
+
+.logo-link h2:hover {
+  text-shadow: 0 0 10px rgba(45, 123, 255, 0.5);
 }
 
 .header-buttons {
-    display: flex;
-    align-items: center;
-    gap: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
-.header-buttons a, .header-buttons button, .header-buttons span {
-    text-decoration: none;
-    color: #3163B4;
-    font-weight: 500;
-    font-size: 16px;
-    transition: color 0.25s;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
+.header-buttons a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text-blue);
+  transition: 0.3s;
 }
 
-.header-buttons a:hover, .header-buttons button:hover {
-    color: #4A90E2;
+.header-buttons a:hover {
+  color: var(--main-blue);
+  text-shadow: 0 0 8px rgba(45, 123, 255, 0.4);
 }
 
-/* --- 2. 메인 컨텐츠 --- */
+#userInfoDisplay {
+  background: rgba(45, 123, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 10px;
+  color: var(--text-blue);
+  font-weight: 500;
+}
+
+/* ------------------ MAIN ------------------ */
 main {
-    flex-grow: 1;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  box-sizing: border-box;
 }
 
+/* ------------------ 카드 스타일 ------------------ */
 .mypage-container {
   width: 90%;
-  max-width: 600px;
-  background: #ffffff;
-  border-radius: 30px;
-  padding: 30px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+  max-width: 700px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(49, 99, 180, 0.15);
+  padding: 40px;
   text-align: center;
-    width: 100%;
-    max-width: 800px;
-    background: #ffffff;
-    border-radius: 24px;
-    box-shadow: 0 6px 20px rgba(49, 99, 180, 0.15);
-    padding: 40px;
+  transition: 0.3s ease;
 }
 
-/* 제목 스타일 */
-.mypage-container h1 {
-  font-size: 3rem;
-  color: #3163B4;
-  margin: 0;
-    color: #3163B4;
-    font-size: 26px;
-    margin-top: 0;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eaf3ff;
+.mypage-container:hover {
+  box-shadow: 0 14px 45px rgba(49, 99, 180, 0.25);
 }
 
 .mypage-container h2 {
-  font-size: 1.8rem;
-  color: #4A90E2;
-  margin: 0;
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 20px;
+  color: var(--text-blue);
+  font-size: 22px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid rgba(49, 99, 180, 0.15);
+  padding-bottom: 10px;
 }
 
-/* 예약 리스트 */
-/* --- 3. 예약 목록 --- */
+/* ------------------ 예약 리스트 ------------------ */
 #reservationsList {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  gap: 18px;
 }
 
 #reservationsList li {
-  background: #eaf3ff;
-  padding: 20px;
-  border-radius: 25px;
-  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(49, 99, 180, 0.15);
+  border-radius: 18px;
+  padding: 15px 20px;
+  font-size: 16px;
   font-weight: 500;
-  box-shadow: 0 6px 20px rgba(49, 99, 180, 0.1);
-  transition: all 0.25s ease;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-    background-color: #f8faff;
-    border: 1.5px solid #cfe3f9;
-    border-radius: 14px;
-    padding: 15px 20px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #444;
+  color: #3e5e8c;
+  box-shadow: 0 3px 10px rgba(49, 99, 180, 0.08);
+  transition: all 0.3s;
 }
 
 #reservationsList li:hover {
-  background: #d4e6ff;
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(49, 99, 180, 0.25);
-  cursor: pointer;
+  transform: translateY(-3px);
+  border-color: var(--main-blue);
+  box-shadow: 0 8px 25px rgba(45, 123, 255, 0.25);
 }
 
-/* 예약 없을 때 메시지 */
+/* ------------------ 예약 없음 메시지 ------------------ */
 #noReservations {
-  font-size: 1.3rem;
-  color: #999;
-    color: #777;
-    font-size: 16px;
-    text-align: center;
-    padding: 40px 0;
-    background-color: #f8faff;
-    border-radius: 14px;
+  font-size: 16px;
+  color: #888;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(49, 99, 180, 0.1);
+  border-radius: 14px;
+  padding: 40px 0;
+  box-shadow: 0 3px 10px rgba(49, 99, 180, 0.05);
 }
 
-/* 반응형 */
-@media (max-width: 600px) {
+/* ------------------ 반응형 ------------------ */
+@media (max-width: 768px) {
   .mypage-container {
-    padding: 20px;
-  }
-  .mypage-container h1 {
-    font-size: 2.4rem;
+    padding: 25px;
   }
   .mypage-container h2 {
-    font-size: 1.5rem;
+    font-size: 20px;
   }
   #reservationsList li {
-    font-size: 1.1rem;
-    padding: 15px;
+    font-size: 14px;
   }
 }
