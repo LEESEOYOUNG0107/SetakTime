@@ -1,191 +1,249 @@
+/* ===================================
+   🌊 SetakTime Reserve — Premium Style
+   =================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root {
+  --main-blue: #7da4e7;
+  --light-blue: #e8f2ff;
+  --text-blue: #3163b4;
+  --bg-glass: rgba(255, 255, 255, 0.55);
+  --premium-purple: #8e44ad; /* 예약됨 슬롯을 위한 새로운 색상 */
+  --shadow-glow: 0 8px 30px rgba(49, 99, 180, 0.15);
+}
+
 body {
-    /* background-color: #F0F6FF; */
-    font-family: 'Noto Sans KR', sans-serif;
-    background: linear-gradient(180deg, #e1f4ff 0%, #ffffff 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-    color: #333;
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: linear-gradient(180deg, #c8e6ff 0%, #ffffff 100%);
+  color: #2f4057;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
+/* ------------------ HEADER ------------------ */
 header {
-    width: 100%;
-    padding: 20px 40px;
-    box-sizing: border-box;
-    background: transparent;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  width: 90%;
+  max-width: 1000px;
+  margin-top: 30px;
+  padding: 16px 36px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  box-shadow: var(--shadow-glow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-header .logo-link {
-    text-decoration: none;
+.logo-link {
+  text-decoration: none;
 }
 
-header h2 {
-    font-family: 'Poppins', sans-serif;
-    color: #3163B4;
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0;
+.logo-link h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-blue);
+  margin: 0;
+  letter-spacing: -0.5px;
+  transition: 0.3s;
+}
+
+.logo-link h2:hover {
+  text-shadow: 0 0 10px rgba(45, 123, 255, 0.5);
 }
 
 .header-buttons {
-    display: flex;
-    align-items: center;
-    gap: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
-.header-buttons a, .header-buttons button, .header-buttons span {
-    text-decoration: none;
-    color: #3163B4;
-    font-weight: 500;
-    font-size: 16px;
-    transition: color 0.25s;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
+.header-buttons a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text-blue);
+  transition: 0.3s;
 }
 
-.header-buttons a:hover, .header-buttons button:hover {
-    color: #4A90E2;
+.header-buttons a:hover {
+  color: var(--main-blue);
+  text-shadow: 0 0 8px rgba(45, 123, 255, 0.4);
 }
 
+#userInfoDisplay {
+  background: rgba(45, 123, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 10px;
+  color: var(--text-blue);
+  font-weight: 500;
+}
+
+/* ------------------ MAIN CONTAINER ------------------ */
 .main-container {
-    width: auto;
-    max-width: 1000px;
-    margin: 40px 20px; /* 위아래 여백 추가 */
-    background-color: rgba(255, 255, 255, 0.6); /* 반투명 흰색 */
-    backdrop-filter: blur(12px); /* 블러 효과로 유리 느낌 */
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    padding: 40px;
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    position: relative; /* #day의 기준점이 되도록 설정 */
-    transition: all 0.3s ease;
+  margin-top: 60px;
+  width: 90%;
+  max-width: 1000px;
+  display: flex;
+  gap: 60px;
+  padding: 40px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(49, 99, 180, 0.15);
+  transition: 0.3s ease;
 }
 
+/* ------------------ DATE / TIME COLUMN ------------------ */
 .date-time-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px; /* slots-grid의 row-gap과 동일하게 설정 */
-    padding-top: 51px; /* .top-row 높이(51px)만큼 정확히 내려주기 */
+  flex: 0.4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 #day {
-    color: #3163B4;
-    font-weight: 700;
-    font-size: 24px;
-    position: absolute;
-    top: 40px;
-    left: 40px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-blue);
+  margin-bottom: 12px;
 }
 
 .time {
-    background-color: #f0f6ff;
-    border: 1px solid rgba(207, 227, 249, 0.8);
-    border-radius: 10px;
-    height: 60px;
-    font-weight: 500;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px; /* 아이콘과 텍스트 간격 */
-    color: #5a789e;
-    width: 140px;
+  width: 150px;
+  text-align: center;
+  padding: 14px 0;
+  background: white;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  border: 1px solid #d6e6ff;
+  color: #3e5e8c;
+  box-shadow: 0 2px 6px rgba(49, 99, 180, 0.1);
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
+.time:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, #e8f3ff, #ffffff);
+  border-color: var(--main-blue);
+  box-shadow: 0 6px 18px rgba(49, 99, 180, 0.2);
+}
+
+/* ------------------ MACHINE AREA ------------------ */
 .machine-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  flex: 0.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .top-row {
-    display: flex;
-    justify-content: space-around;
-    padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 .top {
-    width: 150px; /* .slot 너비와 맞춤 */
-    text-align: center;
-    font-size: 18px;
-    font-weight: 700;
-    color: #3163B4;
-    padding-bottom: 15px;
-    border-bottom: 2px solid rgba(49, 99, 180, 0.1);
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-blue);
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(49, 99, 180, 0.15);
 }
 
+/* ------------------ SLOT GRID ------------------ */
 .slots-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 150px); /* .slot 너비와 동일하게 */
-    gap: 20px 30px; /* 세로 간격, 가로 간격 */
-    justify-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px 26px;
+  justify-items: center;
+  margin-top: 10px;
 }
 
 .slot {
-    background-color: #f8faff;
-    border: 1.5px dashed rgba(49, 99, 180, 0.2);
-    width: 150px;
-    height: 60px;  
-    border-radius: 12px;
-    display: flex; /* 아이콘과 텍스트 정렬 */
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #8ca9ce;
-    cursor: pointer;
-    transition: all 0.25s ease;
+  width: 150px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1.5px solid rgba(49, 99, 180, 0.15);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  color: #6a85af;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 3px 10px rgba(49, 99, 180, 0.08);
+  backdrop-filter: blur(6px);
 }
 
 .slot:hover {
-    transform: translateY(-3px);
-    border: 1.5px solid #3163B4;
-    box-shadow: 0 6px 15px rgba(49, 99, 180, 0.2);
-    color: #3163B4;
+  transform: translateY(-4px);
+  border-color: var(--main-blue);
+  color: var(--main-blue);
+  box-shadow: 0 6px 20px rgba(45, 123, 255, 0.25);
 }
 
+/* ------------------ 상태별 색상 ------------------ */
 .slot.reserved {
-    background-color: #3163B4;
-    color: #ffffff;
-    border-style: solid;
-    border-color: #3163B4;
-    cursor: default;
+  background: var(--premium-purple);
+  color: #fff;
+  border-color: var(--premium-purple);
+  cursor: not-allowed;
+  box-shadow: 0 6px 20px rgba(142, 68, 173, 0.4);
 }
 
 .slot.my-reservation {
-    background-color: #5a9cff;
-    border-color: #5a9cff;
-    color: #ffffff;
-    box-shadow: 0 0 15px rgba(90, 156, 255, 0.4);
-}
-
-.slot.using {
-    background-color: #e9eff8;
-    border-color: #d0e2f5;
-    border-style: solid;
-    color: #9ab3d3;
-    cursor: not-allowed;
-}
-.slot.using:hover {
-    transform: none;
+  background: #5a9cff;
+  color: white;
+  box-shadow: 0 0 15px rgba(90, 156, 255, 0.5);
+  border-color: #000000;
 }
 
 .slot.fixed {
-    background-color: #7d8eab;
-    border-color: #7d8eab;
-    color: #ffffff;
-    cursor: not-allowed;
+  background: var(--main-blue);
+  color: #fff;
+  border-color: var(--main-blue);
+  cursor: not-allowed;
+  box-shadow: 0 6px 20px rgba(45, 123, 255, 0.4);
+}
+
+.slot.using {
+  background: #e8efff;
+  color: #9ab3d3;
+  border: 1.5px solid #c8daff;
+  cursor: not-allowed;
+}
+
+.slot.using::after {
+  content: "⚙️";
+  margin-left: 6px;
+  animation: spin 2s linear infinite;
+}
+
+/* 회전 애니메이션 */
+@keyframes spin {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ------------------ 반응형 ------------------ */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

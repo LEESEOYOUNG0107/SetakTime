@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 헤더에 사용자 이름 표시
     const userInfoSpan = document.getElementById('userInfoDisplay');
     if (userInfoSpan) {
-        userInfoSpan.textContent = `${currentUser.username} (${currentUser.role})`;
+        userInfoSpan.innerHTML = `👤 ${currentUser.username} (${currentUser.role === 'student' ? '학생' : '선생님'})`;
     }
 
     const timeSlots = ['18:00:00', '19:00:00', '20:10:00', '21:20:00'];
@@ -178,7 +178,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (confirm("예약을 취소하시겠습니까?")) {
                         try {
                             const response = await fetch(`/reserve/cancel/${reservationId}`, {
-                                method: 'DELETE'
+                                method: 'DELETE',
+                                headers: {
+                                    'Accept': 'application/json' // 서버로부터 JSON 응답을 기대한다고 명시
+                                }
                             });
 
                             if (response.ok) {
