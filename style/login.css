@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Noto Sans KR', sans-serif; /*한글용 폰트*/
-    background-color: #eaf2ff; 
+    background: linear-gradient(180deg, #eaf2ff 0%, #ffffff 100%); /* signup 페이지와 동일한 그라데이션 배경 */
     color: #333;
     display: flex;
     flex-direction: column;
@@ -25,9 +25,8 @@ ul {
 
 header {
     width: 100%;
-    background-color: #ffffff;
+    /* background-color: #ffffff; */ /* 배경을 투명하게 하여 그라데이션이 보이도록 함 */
     padding: 15px 0; /*안쪽 여백 제거*/
-    border-bottom: 1px solid #e0e0e0;
 }
 
 .header-container {
@@ -54,7 +53,7 @@ header nav ul {
 header nav a {
     font-size: 15px;
     font-weight: 500;
-    color: #555;
+    color: #3163B4; /* signup 페이지와 동일하게 링크 색상 변경 */
     transition: color 0.2s; /*애니메이션 효과*/
 }
 
@@ -109,7 +108,7 @@ main {
 }
 
 .login-box input::placeholder {
-    color: #ABBFDE;
+    color: #99aacc; /* signup 페이지와 동일하게 변경 */
 }
 
 .login-box input:focus {
@@ -138,6 +137,14 @@ main {
 .btn-ok {
     background-color: #4A90E2;
     color: white;
+    /* --- signup.css의 .btn-ok 스타일과 통일 --- */
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 15px;
 }
 
 .btn-ok:hover {

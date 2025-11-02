@@ -1,12 +1,15 @@
+/* /style/signup.css */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin: 0; /*바깥 여백 제거*/
+    padding: 0; /*안쪽 여백 제거*/
+    box-sizing: border-box; /*요소 크기 계산*/
 }
 
 body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background-color: #eaf2ff; 
+    font-family: 'Noto Sans KR', sans-serif; /*한글용 폰트*/
+    /* [적용] login.css와 동일한 그라데이션 배경 */
+    background: linear-gradient(180deg, #eaf2ff 0%, #ffffff 100%);
     color: #333;
     display: flex;
     flex-direction: column;
@@ -24,15 +27,15 @@ ul {
 
 header {
     width: 100%;
-    background-color: #ffffff;
+    /* [적용] 배경을 투명하게 하여 그라데이션이 보이도록 함 */
+    background-color: transparent;
     padding: 15px 0;
-    border-bottom: 1px solid #e0e0e0;
 }
 
 .header-container {
     width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; /*좌우 중앙 정렬*/
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -42,19 +45,20 @@ header {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 24px;
-    color: #3163B4;
+    color: #3163B4; /* 로고 색상 */
 }
 
 header nav ul {
-    display: flex;
+    display: flex; /* ul 안의 li을 가로 배치 */
     gap: 25px;
 }
 
 header nav a {
     font-size: 15px;
     font-weight: 500;
-    color: #555;
-    transition: color 0.2s;
+    /* [적용] login.css와 동일하게 링크 색상 변경 */
+    color: #3163B4;
+    transition: color 0.2s; /*애니메이션 효과*/
 }
 
 header nav a:hover {
@@ -69,6 +73,7 @@ main {
     padding: 40px 20px;
 }
 
+/* [수정] .login-container -> .signup-container */
 .signup-container {
     text-align: center;
 }
@@ -81,6 +86,7 @@ main {
     margin-bottom: 40px;
 }
 
+/* [수정] .login-box -> .signup-box */
 .signup-box {
     background-color: #ffffff;
     padding: 40px 50px;
@@ -92,10 +98,11 @@ main {
 
 .signup-box h3 {
     font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 20px;
+    font-weight: 600;
+    font-size: 22px;
     margin-bottom: 30px;
     color: #333;
+    text-transform: capitalize; /* 'sign up' -> 'Sign up' */
 }
 
 .signup-box input {
@@ -108,7 +115,8 @@ main {
 }
 
 .signup-box input::placeholder {
-    color: #ABBFDE;
+    /* [적용] login.css와 동일하게 변경 */
+    color: #99aacc;
 }
 
 .signup-box input:focus {
@@ -117,37 +125,21 @@ main {
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
-.button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.button-group button {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out; /*소의 스타일 변화가 부드럽게 애니메이션*/
-}
-
+/* [적용] .btn-ok 스타일 (login.css와 동일) */
 .btn-ok {
     background-color: #4A90E2;
     color: white;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 25px; /* 둥근 버튼 스타일 */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin-top: 15px; /* 버튼 상단 여백 */
 }
 
 .btn-ok:hover {
     background-color: #357ABD;
-}
-
-.btn-signup {
-    background-color: #D7E3FF;
-    color: #4A90E2;
-}
-
-.btn-signup:hover {
-    background-color: #C1D3FF;
 }
