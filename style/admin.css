@@ -67,13 +67,6 @@ header {
     text-shadow: 0 0 8px rgba(45, 123, 255, 0.4);
 }
 
-.header-buttons a.active {
-    color: var(--main-blue);
-    font-weight: 500;
-    border-bottom: 2px solid var(--main-blue);
-    padding-bottom: 4px;
-}
-
 #userInfoDisplay {
     background: rgba(45, 123, 255, 0.1);
     padding: 6px 12px;
