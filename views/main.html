@@ -42,12 +42,21 @@
           const userRole = user.role === 'student' ? '학생' : (user.role === 'teacher' ? '선생님' : '관리자');
           userInfoArea.innerHTML = `<p class="user-info">${user.username}(${userRole})님 환영합니다.</p>`;
 
-          // 메뉴 버튼 생성
-          buttonArea.innerHTML = `
-            <a href="/reserve" class="menu-button">🧺 세탁 예약/취소</a>
-            <a href="/mypage.html" class="menu-button">👤 마이페이지</a>
-            <a href="/logout" class="menu-button">🔑 로그아웃</a>
-          `;
+          if (user.role === 'teacher') {
+            // 선생님용 메뉴 버튼
+            buttonArea.innerHTML = `
+              <a href="/admin_students.html" class="menu-button">👨‍🎓 학생 관리</a>
+              <a href="/admin_calendar.html" class="menu-button">🗓️ 캘린더 관리</a>
+              <a href="/logout" class="menu-button">🔑 로그아웃</a>
+            `;
+          } else {
+            // 학생용 메뉴 버튼
+            buttonArea.innerHTML = `
+              <a href="/reserve" class="menu-button">🧺 세탁 예약/취소</a>
+              <a href="/mypage.html" class="menu-button">👤 마이페이지</a>
+              <a href="/logout" class="menu-button">🔑 로그아웃</a>
+            `;
+          }
 
         } else {
           // 2. 로그인이 되어 있지 않은 경우

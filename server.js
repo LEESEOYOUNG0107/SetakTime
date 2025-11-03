@@ -98,15 +98,11 @@ app.get('/admin_calendar.html', isTeacher, (req, res) => {
 });
 
 // 선생님 계정으로 로그인 시 기본적으로 학생 관리 페이지로 이동
-// 또는 /admin 주소로 직접 접근 시 학생 관리 페이지로 리다이렉트
+// 또는 /admin 주소로 직접 접근 시 메인 페이지로 리다이렉트
 app.get('/admin', isTeacher, (req, res) => {
-    res.redirect('/admin_students.html');
+    res.redirect('/');
 });
 
-// 로그인 페이지 라우트
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login.html'));
-});
 
 // 로그아웃 API
 app.get('/logout', (req, res) => {
