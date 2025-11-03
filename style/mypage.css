@@ -145,6 +145,29 @@ main {
   box-shadow: 0 8px 25px rgba(45, 123, 255, 0.25);
 }
 
+/* 예약 항목 내 취소 버튼 */
+#reservationsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cancel-btn {
+  background-color: #85a9df;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #4a8cff;
+  box-shadow: 0 4px 12px rgba(90, 156, 255, 0.5);
+}
 /* ------------------ 예약 없음 메시지 ------------------ */
 #noReservations {
   font-size: 16px;

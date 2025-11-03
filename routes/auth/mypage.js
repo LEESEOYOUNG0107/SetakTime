@@ -40,13 +40,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `
                         <span>세탁기 ${res.washer_id}번 - ${res.reservation_time.substring(0, 5)}</span>
-                        <button class="cancel-button" data-id="${res.id}">취소</button>
+                        <button class="cancel-btn" data-id="${res.id}">취소</button>
                     `;
                     reservationsList.appendChild(listItem);
                 });
 
                 // 생성된 취소 버튼들에 이벤트 리스너 추가
-                document.querySelectorAll('.cancel-button').forEach(button => {
+                document.querySelectorAll('.cancel-btn').forEach(button => {
                     button.addEventListener('click', async (event) => {
                         const reservationId = event.target.dataset.id;
                         if (confirm("정말로 이 예약을 취소하시겠습니까?")) {
