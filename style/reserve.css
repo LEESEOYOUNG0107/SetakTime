@@ -204,10 +204,11 @@ header {
 }
 
 .slot.my-reservation {
-  background: #5a9cff;
+  background: var(--main-blue);
   color: white;
-  box-shadow: 0 0 15px rgba(90, 156, 255, 0.5);
-  border-color: #000000;
+  border-color: var(--main-blue);
+  box-shadow: 0 6px 20px rgba(45, 123, 255, 0.4);
+  cursor: pointer; /* 취소할 수 있도록 커서 유지 */
 }
 
 .slot.fixed {
