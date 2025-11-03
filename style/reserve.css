@@ -9,7 +9,6 @@
   --light-blue: #e8f2ff;
   --text-blue: #3163b4;
   --bg-glass: rgba(255, 255, 255, 0.55);
-  --premium-purple: #8e44ad; /* 예약됨 슬롯을 위한 새로운 색상 */
   --shadow-glow: 0 8px 30px rgba(49, 99, 180, 0.15);
 }
 
@@ -196,11 +195,11 @@ header {
 
 /* ------------------ 상태별 색상 ------------------ */
 .slot.reserved {
-  background: var(--premium-purple);
+  background: var(--main-blue);
   color: #fff;
-  border-color: var(--premium-purple);
+  border-color: var(--main-blue);
   cursor: not-allowed;
-  box-shadow: 0 6px 20px rgba(142, 68, 173, 0.4);
+  box-shadow: 0 6px 20px rgba(45, 123, 255, 0.4);
 }
 
 .slot.my-reservation {
