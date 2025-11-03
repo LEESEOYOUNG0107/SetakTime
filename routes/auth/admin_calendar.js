@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        height: 600,
+        height: 'auto', // 높이를 자동으로 조절하여 스크롤바 방지
         locale: 'ko',
         // 페이지 로드 시 '예약 불가' 날짜들을 가져와 캘린더에 표시
         events: async function(fetchInfo, successCallback, failureCallback) {

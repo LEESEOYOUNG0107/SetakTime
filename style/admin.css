@@ -110,6 +110,13 @@ main {
     text-align: center;
 }
 
+.guide-text {
+    color: var(--text-blue);
+    opacity: 0.8;
+    margin-top: -15px;
+    margin-bottom: 25px;
+}
+
 /* --- 테이블 스타일 --- */
 #studentTable {
     width: 100%;
