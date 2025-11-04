@@ -188,7 +188,11 @@ router.get('/my-reservations/today', async (req, res) => {
         return res.status(401).json({ error: '로그인이 필요합니다.' });
     }
     const userId = req.session.user.id;
-    const today = new Date().toISOString().split('T')[0];
+    // KST 기준 오늘 날짜 계산
+    const todayDate = new Date();
+    const offset = todayDate.getTimezoneOffset() * 60000;
+    const today = new Date(todayDate.getTime() - offset).toISOString().split('T')[0];
+
     try {
         const query = 'SELECT id, washer_id, reservation_time FROM reservations WHERE userid = ? AND reservation_date = ? ORDER BY reservation_time ASC';
         const [results] = await db.query(query, [userId, today]);
