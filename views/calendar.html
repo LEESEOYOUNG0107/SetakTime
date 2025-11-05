@@ -1,4 +1,4 @@
-<!-- calendar.html -->
+<!-- calendar.html : 세탁 예약 불가일을 표시하는 달력 페이지 -->
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -6,18 +6,23 @@
 <head>
     <meta charset="UTF-8">
     <title>SetakTime - Calendar</title>
+
+    <!-- 외부 스타일시트 불러오기 -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- FullCalendar Global 빌드 (CSS + JS) -->
+    <!-- FullCalendar (달력 라이브러리) 전역 버전 불러오기 -->
+    <!-- CSS와 JS를 한 번에 포함 -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
     <style>
-        /* 토요일 파랑, 일요일 빨강 */
+        /* 달력의 요일 색상 커스터마이징 */
+        /* 토요일은 파란색 */
         .fc-day-sat {
             color: #1e90ff !important;
         }
 
+        /* 일요일은 빨간색 */
         .fc-day-sun {
             color: #ff4d4f !important;
         }
@@ -26,105 +31,159 @@
 </head>
 
 <body>
+    <!-- 상단 헤더 영역 -->
     <header>
+        <!-- 로고 클릭 시 메인 페이지로 이동 -->
         <a href="/main.html" style="text-decoration: none; color: inherit;">
             <h1>SetakTime</h1>
         </a>
+
+        <!-- 내비게이션 메뉴 -->
         <nav>
             <a href="/main.html">홈</a>
             <a href="/reserve">세탁 예약</a>
         </nav>
     </header>
 
+    <!-- 달력 카드 영역 -->
     <div class="card">
         <h2 class="title">calendar</h2>
+        <!-- FullCalendar가 표시될 위치 -->
         <div id="calendar"></div>
     </div>
 
     <script>
+        // HTML이 모두 로드된 후 실행
         document.addEventListener('DOMContentLoaded', function () {
+            // 달력을 표시할 DOM 요소 가져오기
             const calendarEl = document.getElementById('calendar');
 
+            // FullCalendar 객체 생성
             const calendar = new FullCalendar.Calendar(calendarEl, {
+                // 처음 보이는 달력 형태: 월 단위(dayGridMonth)
                 initialView: 'dayGridMonth',
+                // 달력 높이 설정
                 height: 600,
-                locale: 'ko', //한국어 설정
+                // 한국어로 표시
+                locale: 'ko',
 
-                // 이벤트 스타일
-                eventDisplay: 'block',
-                eventTextColor: '#fff',
-                allDaySlot: true,
+                // 이벤트(일정) 표시 스타일
+                eventDisplay: 'block',  // 블록 형태로 표시
+                eventTextColor: '#fff', // 이벤트 텍스트 색상
+                allDaySlot: true,       // 하루 종일 슬롯 표시
 
-                // 날짜 클릭 시 내 일정 추가
+                /* ==============================
+                   [날짜 클릭 이벤트 처리]
+                ===============================*/
                 dateClick: function (info) {
-                    // 해당 날짜에 이벤트가 이미 있으면 추가 금지
+                    // 이미 해당 날짜에 일정이 있는지 확인
                     const existing = calendar.getEvents().find(e => e.startStr === info.dateStr);
                     if (existing) {
                         alert('이 날은 이미 일정이 있습니다 🚫');
-                        return;
+                        return; // 중복 추가 방지
                     }
 
+                    // 사용자에게 확인 메시지 표시
                     if (confirm(`${info.dateStr} 날짜를 예약 불가로 설정할까요?`)) {
+                        // 사용자가 확인하면 새 일정 추가
                         calendar.addEvent({
-                            title: '내 일정 (예약 불가)',
-                            start: info.dateStr,
-                            allDay: true,
-                            backgroundColor: '#8ecaff',
-                            borderColor: '#8ecaff',
-                            textColor: '#000'
+                            title: '내 일정 (예약 불가)',  // 일정 제목
+                            start: info.dateStr,           // 선택한 날짜
+                            allDay: true,                  // 하루종일 이벤트로 설정
+                            backgroundColor: '#8ecaff',    // 배경색
+                            borderColor: '#8ecaff',        // 테두리색
+                            textColor: '#000'              // 글자색
                         });
                     }
                 },
 
-                // 이벤트 클릭 처리
+                /* ==============================
+                   [이벤트 클릭 시 처리]
+                ===============================*/
                 eventClick: function (info) {
                     const title = info.event.title;
+
+                    // "내 일정"이면 예약 불가 안내
                     if (title.includes('내 일정')) {
                         alert('이 날은 예약이 불가능합니다 ❌');
                     } else {
+                        // 그 외에는 공휴일로 간주
                         alert('공휴일입니다 🌕');
                     }
+
+                    // 클릭 이벤트 버블링(중첩 동작) 방지
                     info.jsEvent.preventDefault();
-                    info.jsEvent.stopPropagation(); // 날짜 클릭으로 이어지는 걸 방지
+                    info.jsEvent.stopPropagation();
                 },
 
-                // 공휴일 API 불러오기
+                /* ==============================
+                   [공휴일 API 불러오기]
+                   FullCalendar의 events 속성은
+                   비동기 함수로 서버에서 일정 데이터를 받아올 수 있음
+                ===============================*/
                 events: async (fetchInfo, successCallback, failureCallback) => {
                     try {
+                        // 백엔드 API 호출 (/api/holidays?year=2025)
                         const res = await fetch(`/api/holidays?year=2025`);
                         if (!res.ok) throw new Error('API 응답 오류: ' + res.status);
+
+                        // JSON 형태로 응답 파싱
                         const data = await res.json();
 
+                        // 응답 데이터 구조에 따라 holidays 배열 추출
                         const holidays = (data.response && data.response.holidays)
                             ? data.response.holidays.map(h => ({
-                                title: h.name,
-                                start: h.date.iso,
-                                allDay: true,
-                                backgroundColor: '#ff6b6b',
-                                borderColor: '#ff6b6b',
-                                textColor: '#fff'
+                                title: h.name,           // 공휴일 이름
+                                start: h.date.iso,       // 날짜 (ISO 형식)
+                                allDay: true,            // 하루종일 이벤트
+                                backgroundColor: '#ff6b6b', // 배경색 (빨강)
+                                borderColor: '#ff6b6b',     // 테두리색
+                                textColor: '#fff'           // 글자색
                             }))
                             : [];
 
+                        // 공휴일이 없을 경우 샘플 일정 표시
                         if (holidays.length === 0) {
                             successCallback([
-                                { title: '샘플 일정 - 시험', start: new Date().toISOString().slice(0, 10), allDay: true, backgroundColor: '#ff6b6b', borderColor: '#ff6b6b' },
-                                { title: '샘플 일정 - 발표', start: new Date(Date.now() + 86400000).toISOString().slice(0, 10), allDay: true, backgroundColor: '#ff6b6b', borderColor: '#ff6b6b' }
+                                {
+                                    title: '샘플 일정 - 시험',
+                                    start: new Date().toISOString().slice(0, 10),
+                                    allDay: true,
+                                    backgroundColor: '#ff6b6b',
+                                    borderColor: '#ff6b6b'
+                                },
+                                {
+                                    title: '샘플 일정 - 발표',
+                                    start: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+                                    allDay: true,
+                                    backgroundColor: '#ff6b6b',
+                                    borderColor: '#ff6b6b'
+                                }
                             ]);
                             return;
                         }
 
+                        // 성공적으로 공휴일 일정 추가
                         successCallback(holidays);
                     } catch (err) {
+                        // 에러 발생 시 콘솔 출력 및 실패 콜백 실행
                         console.error("일정 불러오기 실패:", err);
                         failureCallback(err);
+
+                        // 실패 시 로컬 테스트용 일정 표시
                         successCallback([
-                            { title: '로컬 샘플 - 일정 없음', start: new Date().toISOString().slice(0, 10), allDay: true, backgroundColor: '#ff6b6b' }
+                            {
+                                title: '로컬 샘플 - 일정 없음',
+                                start: new Date().toISOString().slice(0, 10),
+                                allDay: true,
+                                backgroundColor: '#ff6b6b'
+                            }
                         ]);
                     }
                 }
             });
 
+            // 달력 렌더링
             calendar.render();
         });
     </script>
