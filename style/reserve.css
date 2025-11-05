@@ -82,92 +82,100 @@ header {
 
 /* ------------------ MAIN CONTAINER ------------------ */
 .main-container {
+  display: grid;
+  /* 1열: 시간, 2열: 세탁기1, 3열: 세탁기2, 4열: 세탁기3 */
+  grid-template-columns: 150px 1fr 1fr 1fr; 
+  /* 1행: 날짜/세탁기번호, 2행부터: 시간/슬롯 */
+  grid-template-rows: auto repeat(4, auto); 
   margin-top: 60px;
   width: 90%;
   max-width: 1000px;
-  display: flex;
-  gap: 60px;
   padding: 40px;
   background: var(--bg-glass);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border-radius: 28px;
   box-shadow: 0 12px 40px rgba(49, 99, 180, 0.15);
   transition: 0.3s ease;
+  gap: 18px 26px; /* 행 간격, 열 간격 */
 }
 
 /* ------------------ DATE / TIME COLUMN ------------------ */
 .date-time-col {
-  flex: 0.4;
+  /* main-container의 grid에 직접 배치되므로, 이 컨테이너는 필요 없어짐 */
+  /* 대신 개별 요소들을 grid에 직접 배치 */
+  grid-column: 1 / 2; /* 첫 번째 열을 차지 */
+  grid-row: 1 / -1; /* 첫 번째 행부터 마지막 행까지 차지 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 18px;
 }
 
 #day {
   font-size: 22px;
   font-weight: 700;
   color: var(--text-blue);
-  margin-bottom: 12px;
+  height: 45px; /* .top의 높이와 맞춤 */
+  display: flex;
+  align-items: center;
 }
 
 .time {
   width: 150px;
   text-align: center;
-  padding: 14px 0;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: white;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 500;
   border: 1px solid #d6e6ff;
   color: #3e5e8c;
-  box-shadow: 0 2px 6px rgba(49, 99, 180, 0.1);
-  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(49, 99, 180, 0.1);  
   transition: all 0.25s ease;
-}
-
-.time:hover {
-  transform: translateY(-3px);
-  background: linear-gradient(180deg, #e8f3ff, #ffffff);
-  border-color: var(--main-blue);
-  box-shadow: 0 6px 18px rgba(49, 99, 180, 0.2);
 }
 
 /* ------------------ MACHINE AREA ------------------ */
 .machine-container {
-  flex: 0.6;
+  /* main-container의 grid에 직접 배치되므로, 이 컨테이너는 필요 없어짐 */
+  grid-column: 2 / 5; /* 2, 3, 4번 열을 차지 */
+  grid-row: 1 / -1; /* 모든 행을 차지 */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 18px;
 }
 
 .top-row {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 12px;
+  gap: 26px; /* .slots-grid의 열 간격과 동일하게 설정 */
 }
 
 .top {
   flex: 1;
   text-align: center;
+  height: 45px;
   font-weight: 700;
   color: var(--text-blue);
-  padding-bottom: 10px;
-  border-bottom: 2px solid rgba(49, 99, 180, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ------------------ SLOT GRID ------------------ */
 .slots-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px 26px;
+  gap: inherit; /* 부모(.machine-container)의 gap을 상속받음 */
   justify-items: center;
-  margin-top: 10px;
 }
 
 .slot {
-  width: 150px;
+  width: 100%; /* 부모 그리드 컬럼의 너비를 꽉 채움 */
   height: 70px;
   background: rgba(255, 255, 255, 0.7);
   border: 1.5px solid rgba(49, 99, 180, 0.15);
@@ -181,7 +189,7 @@ header {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 3px 10px rgba(49, 99, 180, 0.08);
-  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .slot:hover {
@@ -196,7 +204,7 @@ header {
   background: var(--main-blue);
   color: #fff;
   border-color: var(--main-blue);
-  cursor: not-allowed;
+  cursor: default;
   box-shadow: 0 6px 20px rgba(45, 123, 255, 0.4);
 }
 
@@ -212,7 +220,7 @@ header {
   background: var(--main-blue);
   color: #fff;
   border-color: var(--main-blue);
-  cursor: not-allowed;
+  cursor: default;
   box-shadow: 0 6px 20px rgba(45, 123, 255, 0.4);
 }
 
@@ -220,7 +228,7 @@ header {
   background: #e8efff;
   color: #9ab3d3;
   border: 1.5px solid #c8daff;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .slot.using::after {
@@ -238,8 +246,9 @@ header {
 /* ------------------ 반응형 ------------------ */
 @media (max-width: 768px) {
   .main-container {
-    flex-direction: column;
-    gap: 30px;
+    grid-template-columns: 1fr 1fr; /* 2열로 변경 */
+    grid-template-rows: auto auto repeat(4, auto);
+    gap: 15px;
   }
   .slots-grid {
     grid-template-columns: repeat(2, 1fr);
