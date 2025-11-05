@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const response = await fetch(`/reserve/cancel/${reservationId}`, {
                                 method: 'DELETE',
                                 headers: {
-                                    'Accept': 'application/json' // 서버로부터 JSON 응답을 기대한다고 명시합니다.
+                                    'Accept': 'application/json' // 서버로부터 JSON 응답을 기대한다고 명시
                                 }
                             });
 
