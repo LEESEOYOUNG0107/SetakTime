@@ -1,3 +1,4 @@
+//2412_이서영: 세탁기 예약/취소 기능 구현
 const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // db.js 파일 불러오기

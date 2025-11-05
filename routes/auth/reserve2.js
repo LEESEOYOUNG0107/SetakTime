@@ -1,3 +1,4 @@
+//2412_이서영: 세탁기 예약/취소 기능 구현
 //reserve2.js (reserve.html에서 js만 따로 뺀 거)
 document.addEventListener('DOMContentLoaded', async () => {
     const today = new Date();

@@ -1,3 +1,4 @@
+//2406_송민채
 document.addEventListener('DOMContentLoaded', async () => {
     // 0. 현재 로그인된 사용자 정보 가져오기 및 권한 확인
     let currentUser = null;

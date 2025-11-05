@@ -1,3 +1,4 @@
+//2412_임소영: 회원가입 화면 구현, 입력 예외처리
 const express = require('express');
 const router = express.Router();
 const db = require('../../db');
