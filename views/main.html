@@ -1,0 +1,80 @@
+<!-- 2412_임소영 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SetakTime - 메인</title>
+  <link rel="stylesheet" href="/style/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="kiosk-container">
+    <div class="logo-area">
+      <h1 class="main-title">SetakTime</h1>
+      <p class="subtitle">시원하게! 간편하게! 내 세탁 시간 관리</p>
+    </div>
+
+    <!-- 로그인 시 사용자 정보가 표시될 영역 -->
+    <div id="user-info-area"></div>
+
+    <!-- 버튼이 동적으로 생성될 영역 -->
+    <div class="button-area">
+      <!-- 자바스크립트로 버튼이 채워집니다. -->
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const buttonArea = document.querySelector('.button-area');
+      const userInfoArea = document.getElementById('user-info-area');
+
+      try {
+        // 서버에 현재 로그인된 사용자 정보 요청
+        const response = await fetch('/api/user-status');
+
+        if (response.ok) {
+          // 1. 로그인이 되어 있는 경우
+          const user = await response.json();
+
+          // 사용자 정보 표시
+          const userRole = user.role === 'student' ? '학생' : (user.role === 'teacher' ? '선생님' : '관리자');
+          userInfoArea.innerHTML = `<p class="user-info">${user.username}(${userRole})님 환영합니다.</p>`;
+
+          if (user.role === 'teacher') {
+            // 선생님용 메뉴 버튼
+            buttonArea.innerHTML = `
+              <a href="/admin_students.html" class="menu-button">👨‍🎓 학생 관리</a>
+              <a href="/admin_calendar.html" class="menu-button">🗓️ 캘린더 관리</a>
+              <a href="/logout" class="menu-button">🔑 로그아웃</a>
+            `;
+          } else {
+            // 학생용 메뉴 버튼
+            buttonArea.innerHTML = `
+              <a href="/reserve" class="menu-button">🧺 세탁 예약/취소</a>
+              <a href="/mypage.html" class="menu-button">👤 마이페이지</a>
+              <a href="/logout" class="menu-button">🔑 로그아웃</a>
+            `;
+          }
+
+        } else {
+          // 2. 로그인이 되어 있지 않은 경우
+          buttonArea.innerHTML = `
+            <a href="/login.html" class="menu-button">🔑 로그인</a>
+            <a href="/signup.html" class="menu-button">🪪 회원가입</a>
+          `;
+        }
+      } catch (error) {
+        console.error('사용자 상태 확인 중 오류 발생:', error);
+        // 오류 발생 시 기본 로그인/회원가입 버튼 표시
+        buttonArea.innerHTML = `
+            <a href="/login.html" class="menu-button">🔑 로그인</a>
+            <a href="/signup.html" class="menu-button">🪪 회원가입</a>
+          `;
+      }
+    });
+  </script>
+</body>
+</html>

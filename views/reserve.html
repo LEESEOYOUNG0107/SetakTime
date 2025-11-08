@@ -1,3 +1,4 @@
+<!-- 2411_이서영 -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,16 +6,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>It's SetakTime~!</title>
-    <link rel="stylesheet" href="../style/reserve.css">
+    <link rel="stylesheet" href="/style/reserve.css">
 </head>
 
 <body>
     <header>
-        <h2>SetakTime</h2>
-        <div class="header-buttons">
-            <button>로그아웃</button>
-            <span>이름(학생)</span>
-        </div>
+        <a href="/main.html" class="logo-link">
+            <h2>SetakTime</h2>
+        </a>
+        <nav class="header-buttons">
+            <a href="/main.html">홈</a>
+            <span id="userInfoDisplay"></span>
+        </nav>
     </header>
 
 
@@ -28,20 +31,20 @@
         </div>
         <div class="machine-container">
             <div class="top-row">
-                <div class="top">1</div>
-                <div class="top">2</div>
-                <div class="top">3</div>
+                <div class="top">🧺 1번</div>
+                <div class="top">🧺 2번</div>
+                <div class="top">🧺 3번</div>
             </div>
             <div class="slots-grid">
                 <div class="slot"></div>
                 <div class="slot"></div>
                 <div class="slot"></div>
-                <div class="slot occupied">401</div>
-                <div class="slot occupied">401</div>
-                <div class="slot occupied">401</div>
                 <div class="slot"></div>
                 <div class="slot"></div>
-                <div class="slot occupied">401</div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
                 <div class="slot"></div>
                 <div class="slot"></div>
                 <div class="slot"></div>
@@ -49,101 +52,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date();
-            const month = today.getMonth() + 1;
-            const date = today.getDate();
-            document.getElementById("day").innerHTML = `${month}/${date}`;
-
-            // 이 배열은 백엔드 API에서 가져올 데이터와 매핑하기 위한 임시 데이터
-            const timeSlots = ['18:00', '19:00', '20:10', '21:20'];
-            const washerIds = [1, 2, 3];
-            const slots = document.querySelectorAll('.slots-grid .slot');
-
-            // API를 호출하여 예약 데이터를 가져와 UI를 업데이트하는 함수
-            async function UpdateReservations() {
-                try {
-                    const allReservations = [];
-
-                    // 각 세탁기별로 API를 호출하여 예약 데이터를 가져옵니다.
-                    for (const washerId of washerIds) {
-                        const response = await fetch(`/reserve/machine/${washerId}`);
-                        const data = await response.json();
-                        allReservations.push(...data);
-                    }
-
-                    // 모든 슬롯을 초기화
-                    // 이렇게 해야 이전의 예약 정보가 남아있지 않고 최신 정보만 화면에 표시
-                    slots.forEach(slot => {
-                        slot.textContent = '';
-                        slot.classList.remove('occupied');
-                    });
-
-                    // 슬롯 업데이트
-                    allReservations.forEach(reservation => {
-                        const washerId = reservation.washer_id;
-                        const reservationTime = reservation.reservation_time.substring(0, 5); // '18:00' 형태로 자름
-                        const userId = reservation.userid; // 백엔드에서 user_id를 반환해야 함
-
-                        const timeIndex = timeSlots.indexOf(reservationTime);
-                        const machineIndex = washerIds.indexOf(washerId);
-
-                        if (timeIndex !== -1 && machineIndex !== -1) {
-                            const slotIndex = (timeIndex * washerIds.length) + machineIndex;
-                            if (slotIndex < slots.length) {
-                                slots[slotIndex].classList.add('occupied');
-                                slots[slotIndex].textContent = userId;
-                            }
-                        }
-                    });
-
-                } catch (error) {
-                    console.error('예약 데이터를 불러오는 중 오류가 발생했습니다:', error);
-                }
-            }
-            //9/28여기까지 함 아래부터 시작!
-            // 슬롯 클릭 이벤트 리스너 추가
-            slots.forEach((slot, index) => {
-                slot.addEventListener('click', async (event) => {
-                    const timeIndex = Math.floor(index / washerIds.length);
-                    const machineIndex = index % washerIds.length;
-
-                    const machineId = washerIds[machineIndex];
-                    const timeSlot = timeSlots[timeIndex];
-
-                    // occupied 클래스가 있는지 확인 (이미 예약된 슬롯인지 확인)
-                    if (slot.classList.contains('occupied')) {
-                        alert('이미 예약된 시간입니다.');
-                    } else {
-                        // 예약 생성
-                        if (confirm(`${timeSlot}에 ${machineId}번 세탁기를 예약하시겠습니까?`)) {
-                            try {
-                                const response = await fetch('/reserve/create', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        washerId: machineId,
-                                        reservationDate: today.toISOString().split('T')[0], // 날짜를 YYYY-MM-DD 형식으로
-                                        reservationTime: timeSlot // 'HH:MM' 형식으로 보냅니다.
-                                    }),
-                                });
-                                const result = await response.json();
-                                alert(result.message);
-                                UpdateReservations(); // 예약 성공 후 화면 업데이트
-                            } catch (error) {
-                                alert('예약 생성에 실패했습니다.');
-                                console.error('예약 생성 오류:', error);
-                            }
-                        }
-                    }
-                });
-            });
-
-            // 페이지 로드 시 예약 현황을 가져와서 UI 업데이트
-            UpdateReservations();
-        });
-    </script>
+    <script src="/routes/auth/reserve2.js"></script>
 </body>
 
 </html>

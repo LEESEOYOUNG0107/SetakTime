@@ -1,0 +1,168 @@
+/* 2406_송민채 */
+
+/* --- 변수 및 기본 스타일 --- */
+:root {
+    --main-blue: #7da4e7;
+    --light-blue: #e8f2ff;
+    --text-blue: #3163b4;
+    --bg-glass: rgba(255, 255, 255, 0.55);
+    --shadow-glow: 0 8px 30px rgba(49, 99, 180, 0.15);
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(180deg, #c8e6ff 0%, #ffffff 100%);
+    color: var(--text-blue);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- 헤더 --- */
+header {
+    width: 90%;
+    max-width: 1000px;
+    margin-top: 30px;
+    padding: 16px 36px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    box-shadow: var(--shadow-glow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-link h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--text-blue);
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.logo-link h2:hover {
+    text-shadow: 0 0 10px rgba(45, 123, 255, 0.5);
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.header-buttons a {
+    color: var(--text-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.header-buttons a:hover {
+    color: var(--main-blue);
+    text-shadow: 0 0 8px rgba(45, 123, 255, 0.4);
+}
+
+#userInfoDisplay {
+    background: rgba(45, 123, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: var(--text-blue);
+    font-weight: 500;
+}
+
+/* --- 메인 컨텐츠 --- */
+main {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+    box-sizing: border-box;
+}
+
+.admin-container.glass-card {
+    width: 90%;
+    max-width: 1000px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(18px);
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(49, 99, 180, 0.15);
+    padding: 40px;
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+.admin-container.glass-card:hover {
+    box-shadow: 0 14px 45px rgba(49, 99, 180, 0.25);
+}
+
+.admin-container h1 {
+    color: var(--text-blue);
+    font-size: 22px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid rgba(49, 99, 180, 0.15);
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.guide-text {
+    color: var(--text-blue);
+    opacity: 0.8;
+    margin-top: -15px;
+    margin-bottom: 25px;
+}
+
+/* --- 테이블 스타일 --- */
+#studentTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    text-align: left;
+}
+
+#studentTable th, #studentTable td {
+    padding: 16px;
+    border-bottom: 1.5px solid rgba(49, 99, 180, 0.1);
+}
+
+#studentTable th {
+    font-size: 15px;
+    font-weight: 500;
+    color: #3e5e8c;
+}
+
+#studentTable tbody tr:hover {
+    background-color: rgba(49, 99, 180, 0.05);
+}
+
+#studentTable button {
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    margin: 0 4px;
+}
+
+button.delete-btn {
+    background-color: #ff6b6b;
+}
+button.delete-btn:hover {
+    background-color: #e55a5a;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+button.suspend-btn {
+    background-color: #f0ad4e;
+}
+button.suspend-btn:hover {
+    background-color: #ec9b2e;
+    box-shadow: 0 4px 12px rgba(240, 173, 78, 0.4);
+}

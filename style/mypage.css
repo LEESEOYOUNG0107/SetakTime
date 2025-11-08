@@ -1,0 +1,191 @@
+/* 2412_임소영 */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root {
+  --main-blue: #7da4e7;
+  --light-blue: #e8f2ff;
+  --text-blue: #3163b4;
+  --bg-glass: rgba(255, 255, 255, 0.55);
+  --shadow-glow: 0 8px 30px rgba(49, 99, 180, 0.15);
+}
+
+/* ------------------ 기본 배경 ------------------ */
+body {
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: linear-gradient(180deg, #c8e6ff 0%, #ffffff 100%);
+  color: var(--text-blue);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ------------------ HEADER ------------------ */
+header {
+  width: 90%;
+  max-width: 1000px;
+  margin-top: 30px;
+  padding: 16px 36px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  box-shadow: var(--shadow-glow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-link {
+  text-decoration: none;
+}
+
+.logo-link h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-blue);
+  margin: 0;
+  letter-spacing: -0.5px;
+  transition: 0.3s;
+}
+
+.logo-link h2:hover {
+  text-shadow: 0 0 10px rgba(45, 123, 255, 0.5);
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-buttons a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text-blue);
+  transition: 0.3s;
+}
+
+.header-buttons a:hover {
+  color: var(--main-blue);
+  text-shadow: 0 0 8px rgba(45, 123, 255, 0.4);
+}
+
+#userInfoDisplay {
+  background: rgba(45, 123, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 10px;
+  color: var(--text-blue);
+  font-weight: 500;
+}
+
+/* ------------------ MAIN ------------------ */
+main {
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  box-sizing: border-box;
+}
+
+/* ------------------ 카드 스타일 ------------------ */
+.mypage-container {
+  width: 90%;
+  max-width: 700px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(49, 99, 180, 0.15);
+  padding: 40px;
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+.mypage-container:hover {
+  box-shadow: 0 14px 45px rgba(49, 99, 180, 0.25);
+}
+
+.mypage-container h2 {
+  color: var(--text-blue);
+  font-size: 22px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid rgba(49, 99, 180, 0.15);
+  padding-bottom: 10px;
+}
+
+/* ------------------ 예약 리스트 ------------------ */
+#reservationsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+#reservationsList li {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(49, 99, 180, 0.15);
+  border-radius: 18px;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #3e5e8c;
+  box-shadow: 0 3px 10px rgba(49, 99, 180, 0.08);
+  transition: all 0.3s;
+}
+
+#reservationsList li:hover {
+  transform: translateY(-3px);
+  border-color: var(--main-blue);
+  box-shadow: 0 8px 25px rgba(45, 123, 255, 0.25);
+}
+
+/* 예약 항목 내 취소 버튼 */
+#reservationsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cancel-btn {
+  background-color: #85a9df;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #4a8cff;
+  box-shadow: 0 4px 12px rgba(90, 156, 255, 0.5);
+}
+/* ------------------ 예약 없음 메시지 ------------------ */
+#noReservations {
+  font-size: 16px;
+  color: #888;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(49, 99, 180, 0.1);
+  border-radius: 14px;
+  padding: 40px 0;
+  box-shadow: 0 3px 10px rgba(49, 99, 180, 0.05);
+}
+
+/* ------------------ 반응형 ------------------ */
+@media (max-width: 768px) {
+  .mypage-container {
+    padding: 25px;
+  }
+  .mypage-container h2 {
+    font-size: 20px;
+  }
+  #reservationsList li {
+    font-size: 14px;
+  }
+}
